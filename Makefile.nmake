@@ -1,8 +1,10 @@
 # usage: nmake -f Makefile.nmake
 
 LD = link
-EXE = bin\nsocks.exe bin\ssocksd.exe bin\ssocks.exe bin\rssocks.exe bin\rcsocks.exe
-OBJ = bin\auth-util.obj bin\configd-util.obj bin\win_getopt.obj bin\libsocks\*.obj 
+EXE = bin\nsocks.exe bin\ssocks.exe bin\rssocks.exe bin\rcsocks.exe
+#bin\ssocksd.exe
+OBJ = bin\auth-util.obj bin\win_getopt.obj bin\libsocks\*.obj
+#bin\configd-util.obj
 
 !IF [@copy /y config.h.win32 src\config.h]
 !ENDIF
