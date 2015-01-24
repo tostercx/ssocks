@@ -398,7 +398,7 @@ int analyse_request(s_socks *s, s_socket *stream, s_socket *bind,
 			if (!PEEK_DISP(buf, sizeof(Socks5Req) + sizeof(chAddr) + 2)) return -EAGAIN;
 
 			memcpy(&chAddr, (buf->data + sizeof(Socks5Req)), sizeof(chAddr));
-			inet_aton(chAddr, &addr);
+			inet_pton(AF_INET, chAddr, &addr);
 
 			/* After domain we have the port
 			 * big endian on 2 bytes*/
