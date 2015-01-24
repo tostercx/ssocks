@@ -71,7 +71,11 @@ int build_addr_server(char *name, int port, struct sockaddr_in *addr){
 	addr->sin_port = htons(port);
 	TRACE(L_DEBUG, "dns: server address resolution %s ...", name);
 	if( ( hp = gethostbyname(name) ) == NULL ){
+#ifdef _WIN32
+    ERROR(L_DEBUG, "gethostbyname failed with code %d", WSAGetLastError());
+#else
 		herror("gethostbyname");
+#endif
 		return -1;
 	}
 	memcpy(&addr->sin_addr.s_addr, hp->h_addr, hp->h_length);
