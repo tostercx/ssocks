@@ -55,6 +55,6 @@ struct globalArgsServer_t {
 int loadConfigFile(char *filename, struct globalArgsServer_t *c);
 int writePID(char *filename);
 int removePID(char *filename);
-char *strncpy_s(char *dest, const char *src, size_t n);
+char *strncpy_sx(char *dest, const char *src, size_t n);
 
 #endif /* CONFIGD_UTIL__H */

@@ -30,12 +30,14 @@
 #include <libsocks/output-util.h>
 
 #include <stdio.h>
-#include <strings.h>       
 #include <string.h>
 #include <stdlib.h>
 
+#ifndef _WIN32
+#include <strings.h>
 /* Daemon function */
 #include <unistd.h>
+#endif
 
 
 int loadConfigFile(char *filename, struct globalArgsServer_t *c){
@@ -70,15 +72,15 @@ int loadConfigFile(char *filename, struct globalArgsServer_t *c){
 		if(strcasecmp(var, "PORT") == 0 ){
 			c->port = atoi(val);
 		}else if(strcasecmp(var, "AUTH") == 0 ){
-			strncpy_s(c->fileauth, val, 
+			strncpy_sx(c->fileauth, val, 
 				sizeof(globalArgsServer.fileauth));
 		}else if(strcasecmp(var, "LOG") == 0 ){
-			strncpy_s(c->filelog, val, 
+			strncpy_sx(c->filelog, val, 
 				sizeof(globalArgsServer.filelog));
 		}else if(strcasecmp(var, "DAEMON") == 0 ){
 			c->daemon = atoi(val);
 		}else if(strcasecmp(var, "BIND") == 0 ){
-			strncpy_s(c->bindAddr, val, 
+			strncpy_sx(c->bindAddr, val, 
 				sizeof(globalArgsServer.bindAddr));
 		}else if(strcasecmp(var, "VERBOSITY") == 0 ){
 			c->verbosity = atoi(val);
@@ -86,10 +88,10 @@ int loadConfigFile(char *filename, struct globalArgsServer_t *c){
 			c->guest = atoi(val);
 #ifdef HAVE_LIBSSL
 		}else if(strcasecmp(var, "CERT") == 0 ){
-			strncpy_s(c->filecert, val, 
+			strncpy_sx(c->filecert, val, 
 				sizeof(globalArgsServer.filecert));
 		}else if(strcasecmp(var, "KEY") == 0 ){
-			strncpy_s(c->filekey, val, 
+			strncpy_sx(c->filekey, val, 
 				sizeof(globalArgsServer.filekey));
 		}else if(strcasecmp(var, "SSL") == 0 ){
 			c->ssl = atoi(val);
@@ -170,7 +172,7 @@ void background(){
 }
 
 /* Fast hack for secure strcpy, to lazy to check if is trully secure */
-char *strncpy_s(char *dest, const char *src, size_t n){
+char *strncpy_sx(char *dest, const char *src, size_t n){
 	dest[n] = 0;
 	char *s = strncpy(dest, src, n-1);
 	return s;
