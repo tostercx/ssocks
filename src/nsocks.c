@@ -38,9 +38,9 @@
 #ifdef _WIN32
 #include "XGetopt.h"
 #else
-#include <config.h>
 #include <getopt.h>
 #endif
+#include <config.h>
 
 
 struct globalArgs_t {

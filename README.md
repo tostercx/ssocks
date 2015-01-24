@@ -5,6 +5,7 @@ and a socks5 relay (run a server and send to a another socks5 server).
 
 ------------------------------------------------------------------------
 CI Builds:
+
 [![Build Status](https://travis-ci.org/tostercx/ssocks.svg?branch=master)](https://travis-ci.org/tostercx/ssocks)
 
 ------------------------------------------------------------------------

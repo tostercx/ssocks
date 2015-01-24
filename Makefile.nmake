@@ -3,6 +3,9 @@
 EXE = src\nsocks.exe src\ssocksd.exe src\ssocks.exe src\rssocks.exe src\rcsocks.exe
 CFLAGS = /Isrc
 
+!IF [@copy /y config.h.win32 src\config.h]
+!ENDIF
+
 all: $(EXE)
 
 {src\}.c.obj:
