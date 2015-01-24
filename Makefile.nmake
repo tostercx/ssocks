@@ -1,15 +1,16 @@
 # usage: nmake -f Makefile.nmake
 
-EXE = src\nsocks.exe src\ssocksd.exe src\ssocks.exe src\rssocks.exe src\rcsocks.exe
-CFLAGS = /Isrc
+LD = link
+EXE = bin\nsocks.exe bin\ssocksd.exe bin\ssocks.exe bin\rssocks.exe bin\rcsocks.exe
 
 !IF [@copy /y config.h.win32 src\config.h]
 !ENDIF
 
 all: $(EXE)
 
-{src\}.c.obj:
-  $(CC) $(CFLAGS) $<
+{src}.c{bin}.obj:
+  @if not exist bin mkdir bin
+  $(CC) /c /Isrc /Fobin\ $<
 
-{src\}.obj.exe:
-  $(LD) $(LDFLAGS) /out:$@ $(OBJ)
+$(EXE): bin\*.obj
+  $(LD) /out:$@ ws2_32.lib $<
