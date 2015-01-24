@@ -29,6 +29,7 @@
 #define OUTPUT_UTIL__H
 
 #include <stdlib.h>
+#undef ERROR
 
 /* Global variable */
 extern int verbosity;
