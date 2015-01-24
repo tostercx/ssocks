@@ -35,7 +35,12 @@
 #include <libsocks/socks5-server.h>
 
 #include <config.h>
+
+#ifdef _WIN32
+#include "win_getopt.h"
+#else
 #include <getopt.h>
+#endif
 
 
 #define PORT 1080
@@ -132,6 +137,7 @@ void reverse_server(char *sockshost, int socksport,
     for (nc = 0; nc < MAXCLI; nc++) init_client (&tc[nc], nc, M_SERVER, &conf);
 
 
+#ifndef _WIN32
 	if ( globalArgs.background == 1 ){
 		TRACE(L_NOTICE, "server: background ...");
 		if ( daemon(0, 0) != 0 ){
@@ -141,6 +147,8 @@ void reverse_server(char *sockshost, int socksport,
 	}
 
     bor_signal (SIGINT, capte_fin, SA_RESTART);
+#endif
+
 
     while (boucle_princ) {
         k = init_select_server_reverse(tc, &maxfd, ncon,
