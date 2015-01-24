@@ -2,15 +2,22 @@
 
 LD = link
 EXE = bin\nsocks.exe bin\ssocksd.exe bin\ssocks.exe bin\rssocks.exe bin\rcsocks.exe
+OBJ = bin\auth-util.obj bin\configd-util.obj bin\win_getopt.obj bin\libsocks\*.obj 
 
 !IF [@copy /y config.h.win32 src\config.h]
 !ENDIF
 
 all: $(EXE)
 
+{src\libsocks}.c{bin\libsocks}.obj:
+  @if not exist bin mkdir bin
+  @if not exist bin\libsocks mkdir bin\libsocks
+  $(CC) /c /Isrc /Fobin\libsocks\ $<
+
 {src}.c{bin}.obj:
   @if not exist bin mkdir bin
   $(CC) /c /Isrc /Fobin\ $<
 
-$(EXE): bin\*.obj
+$(EXE): $(OBJ)
+  $(CC) /c /Isrc /Fobin\ src\$(@B).c
   $(LD) /out:$@ ws2_32.lib $<
