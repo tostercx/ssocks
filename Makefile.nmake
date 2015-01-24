@@ -12,6 +12,9 @@ OBJ = bin\auth-util.obj bin\win_getopt.obj bin\libsocks\bor-util.obj bin\libsock
 
 all: $(EXE)
 
+clean:
+  rd /s /q bin
+
 {src\libsocks}.c{bin\libsocks}.obj:
   @if not exist bin mkdir bin
   @if not exist bin\libsocks mkdir bin\libsocks
