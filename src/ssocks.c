@@ -35,7 +35,12 @@
 #include <libsocks/socks5-server.h>
 
 #include <config.h>
+
+#ifdef _WIN32
+#include "win_getopt.h"
+#else
 #include <getopt.h>
+#endif
 
 
 #define PORT 1080
@@ -141,6 +146,7 @@ void server_relay(char *sockshost, int socksport, int port,
     soc_ec = new_listen_socket (NULL, port, MAXCLI, &addrS);
     if (soc_ec < 0) goto fin_serveur;
 
+#ifndef _WIN32
 	if ( globalArgs.background == 1 ){
 		TRACE(L_NOTICE, "server: background ...");
 		if ( daemon(0, 0) != 0 ){
@@ -150,6 +156,7 @@ void server_relay(char *sockshost, int socksport, int port,
 	}
 
     bor_signal (SIGINT, capte_fin, SA_RESTART);
+#endif
 
     while (boucle_princ) {
         init_select_dynamic (soc_ec, tc, &maxfd, &set_read, &set_write);
