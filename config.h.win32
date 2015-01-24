@@ -1,6 +1,8 @@
 #ifndef SSOCKS_CONFIG
 #define SSOCKS_CONFIG
 
+#undef ERROR
+
 #define PACKAGE_NAME      "ssocks"
 #define PACKAGE_TARNAME   "ssocks"
 #define PACKAGE_VERSION   "0.0.14"
