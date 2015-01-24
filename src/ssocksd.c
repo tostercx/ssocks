@@ -154,11 +154,11 @@ void parseArg(int argc, char *argv[]){
 				globalArgsServer.ssl = 1;
 				break;
 			case 'c':
-				strncpy_s(globalArgsServer.filecert, optarg, 
+				strncpy_sx(globalArgsServer.filecert, optarg, 
 					sizeof(globalArgsServer.filecert));
 				break;
 			case 'k':
-				strncpy_s(globalArgsServer.filekey, optarg, 
+				strncpy_sx(globalArgsServer.filekey, optarg, 
 					sizeof(globalArgsServer.filekey));
 				break;
 #endif
@@ -171,22 +171,22 @@ void parseArg(int argc, char *argv[]){
 				break;
 
 			case 'a':
-				strncpy_s(globalArgsServer.fileauth, optarg, 
+				strncpy_sx(globalArgsServer.fileauth, optarg, 
 					sizeof(globalArgsServer.fileauth));
 				break;
 			case 'b':
-				strncpy_s(globalArgsServer.bindAddr, optarg, 
+				strncpy_sx(globalArgsServer.bindAddr, optarg, 
 					sizeof(globalArgsServer.bindAddr));
 				// globalArgsServer.bindAddr = optarg;
 				break;
 
 			case 'l':
-				strncpy_s(globalArgsServer.filelog, optarg, 
+				strncpy_sx(globalArgsServer.filelog, optarg, 
 					sizeof(*globalArgsServer.filelog));
 				break;
 
 			case 'f':
-				strncpy_s(globalArgsServer.fileconfig, optarg, 
+				strncpy_sx(globalArgsServer.fileconfig, optarg, 
 					sizeof(globalArgsServer.fileconfig));
 				if ( loadConfigFile(optarg, &globalArgsServer) < 0 ){
 					ERROR(L_NOTICE, "config: config file error");
