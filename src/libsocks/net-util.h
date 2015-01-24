@@ -31,11 +31,11 @@
 
 
 #ifdef _WIN32
-
+#include <stdint.h>
 #else
 #include <netinet/ip.h>
-#include <config.h>
 #endif
+#include <config.h>
 
 
 /* Prototypes  */
