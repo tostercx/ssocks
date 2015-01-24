@@ -35,7 +35,12 @@
 #include <libsocks/socks5-server.h>
 
 #include <config.h>
+
+#ifdef _WIN32
+#include "win_getopt.h"
+#else
 #include <getopt.h>
+#endif
 
 
 #define PORT 1080
@@ -238,6 +243,8 @@ void server_relay(int port, int listen, int ssl){
     soc_ec_cli = new_listen_socket (NULL, listen, MAXCLI, &addrS);
     if (soc_ec_cli < 0) goto fin_serveur;
 
+
+#ifndef _WIN32
 	if ( globalArgs.background == 1 ){
 		TRACE(L_NOTICE, "server: background ...");
 		if ( daemon(0, 0) != 0 ){
@@ -251,6 +258,9 @@ void server_relay(int port, int listen, int ssl){
     /* TODO: Find a better way to exit the select and recall the init_select
      * SIGUSR1 is send by a thread to unblock the select */
     bor_signal (SIGUSR1, capte_usr1, SA_RESTART);
+#endif
+
+    
     while (boucle_princ) {
     	init_select_reverse(soc_ec, soc_ec_cli, tc, &maxfd, &set_read, &set_write);
 
