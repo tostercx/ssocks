@@ -41,8 +41,9 @@ File:
   - /etc/ssocksd.conf is server configuration file
   - /etc/ssocksd.auth is password file
   - /var/log/ssocksd.log is default log (specified in configuration file)
-  - /var/run/ssocksd.pid is create in daemon mode and delete 
+  - /var/run/ssocksd.pid is create in daemon mode and delete
  when it receive SIGTERM
+
 -----------------------------------------------------------------------
 
  How to use rssocks and rcsocks in pentest mode
@@ -109,5 +110,6 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+ THE SOFTWARE.
+
 ------------------------------------------------------------------------
