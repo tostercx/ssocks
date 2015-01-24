@@ -27,6 +27,7 @@ void bor_perror (const char *funcname)
       - SA_RESETHAND : le handler n'est pas rearme.
     Renvoie le resultat de sigaction. Verbeux.
 */
+#ifndef _WIN32
 int bor_signal (int sig, void (*h)(int), int options)
 {
     int r;
@@ -38,6 +39,7 @@ int bor_signal (int sig, void (*h)(int), int options)
     if (r < 0) bor_perror (__func__);
     return r;
 }
+#endif
 
 
 /* Attachement d'une socket de domaine AF_UNIX a une adresse sockaddr_un

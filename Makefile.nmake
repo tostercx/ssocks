@@ -1,9 +1,10 @@
 # usage: nmake -f Makefile.nmake
 
+CFLAGS = /nologo /DSTATIC_GETOPT /c /Isrc
 LD = link
 EXE = bin\nsocks.exe bin\ssocks.exe bin\rssocks.exe bin\rcsocks.exe
 #bin\ssocksd.exe
-OBJ = bin\auth-util.obj bin\win_getopt.obj bin\libsocks\*.obj
+OBJ = bin\auth-util.obj bin\win_getopt.obj bin\libsocks\bor-util.obj bin\libsocks\net-util.obj bin\libsocks\output-util.obj bin\libsocks\socks5-client.obj bin\libsocks\socks5-server.obj bin\libsocks\socks-common.obj bin\libsocks\log-util.obj bin\libsocks\client.obj bin\libsocks\socks4.obj
 #bin\configd-util.obj
 
 !IF [@copy /y config.h.win32 src\config.h]
@@ -14,12 +15,12 @@ all: $(EXE)
 {src\libsocks}.c{bin\libsocks}.obj:
   @if not exist bin mkdir bin
   @if not exist bin\libsocks mkdir bin\libsocks
-  $(CC) /c /Isrc /Fobin\libsocks\ $<
+  @$(CC) $(CFLAGS) /Fobin\libsocks\ $<
 
 {src}.c{bin}.obj:
   @if not exist bin mkdir bin
-  $(CC) /c /Isrc /Fobin\ $<
+  @$(CC) $(CFLAGS) /Fobin\ $<
 
 $(EXE): $(OBJ)
-  $(CC) /c /Isrc /Fobin\ src\$(@B).c
-  $(LD) /out:$@ ws2_32.lib $<
+  @$(CC) $(CFLAGS) /Fobin\ src\$(@B).c
+  @$(LD) /NOLOGO /out:$@ ws2_32.lib $<

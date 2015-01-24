@@ -20,7 +20,9 @@
 #include <errno.h>      /* errno */
 
 #ifdef _WIN32
-#include <Winsock2.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#define sockaddr_un sockaddr_in
 #else
 #include <unistd.h>     /* close */
 #include <sys/wait.h>   /* wait */

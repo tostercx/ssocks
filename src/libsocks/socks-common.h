@@ -30,14 +30,13 @@
 
 
 #ifdef _WIN32
-
+#include <winsock2.h>
 #else
 #include <netinet/ip.h> /* socket sockaddr_in */
 #include <unistd.h>		/* read and write */
-
-#include <config.h>
 #endif
 
+#include <config.h>
 #include <stdint.h>
 
 #include "output-util.h"
