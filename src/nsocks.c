@@ -36,7 +36,7 @@
 #include <libsocks/socks5-client.h>
 
 #ifdef _WIN32
-#include "getopt.h"
+#include "win_getopt.h"
 #else
 #include <getopt.h>
 #endif
