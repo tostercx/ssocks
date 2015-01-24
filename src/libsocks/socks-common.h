@@ -31,6 +31,7 @@
 
 #ifdef _WIN32
 #include <winsock2.h>
+#include <ws2tcpip.h>
 #else
 #include <netinet/ip.h> /* socket sockaddr_in */
 #include <unistd.h>		/* read and write */
@@ -190,19 +191,15 @@ typedef struct {
 /* Macro to read and write properly
  */
 #define WRITE_DISP(k, soc, buf) \
-	({ \
 		k = write_socks(soc, buf); \
 		if (k < 0){ /* close_socket(soc); */ break; } /* Error */ \
 		if (k == 0) { break; } /* Need to write again */	\
-		init_buffer(buf); \
-	})
+		init_buffer(buf);
 
 #define READ_DISP(k, soc, buf, minsize) \
-	({ \
 		(k) = read_socks(soc, buf, minsize);			\
 		if ((k) < 0){ /* close_socket(soc); */ break; } /* Error */ \
-		if ((k) == 0) { break; } /* Need to read again */	\
-	})
+		if ((k) == 0) { break; } /* Need to read again */
 
 #define PEEK_DISP(buf, minsize) (buf_size((buf)) >= (minsize))
 
