@@ -35,8 +35,12 @@
 #include <libsocks/socks-common.h>
 #include <libsocks/socks5-client.h>
 
+#ifdef _WIN32
+#include "XGetopt.h"
+#else
 #include <config.h>
 #include <getopt.h>
+#endif
 
 
 struct globalArgs_t {
@@ -66,8 +70,10 @@ void capte_fin (int sig){
 
 void netcat_like(s_socket *s){
 
+#ifndef _WIN32
 	/* Catch CTRL-C */
     bor_signal (SIGINT, capte_fin, SA_RESTART);
+#endif
 
 	int maxfd=0, res;
 	fd_set set_read, set_write;

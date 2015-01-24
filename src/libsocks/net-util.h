@@ -30,8 +30,12 @@
 #define NET_UTIL__H
 
 
+#ifdef _WIN32
+
+#else
 #include <netinet/ip.h>
 #include <config.h>
+#endif
 
 
 /* Prototypes  */

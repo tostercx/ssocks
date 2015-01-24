@@ -29,10 +29,15 @@
 #define SOCKS_COMMON__H
 
 
+#ifdef _WIN32
+
+#else
 #include <netinet/ip.h> /* socket sockaddr_in */
 #include <unistd.h>		/* read and write */
 
 #include <config.h>
+#endif
+
 #include <stdint.h>
 
 #include "output-util.h"

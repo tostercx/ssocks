@@ -11,22 +11,26 @@
 
 #include <stdio.h>      /* printf, fgets */
 #include <stdlib.h>     /* exit */
-#include <unistd.h>     /* close */
 #include <string.h>     /* strlen */
 #include <sys/types.h>  /* open, socket, bind, sendto, recvfrom, wait */
-#include <sys/wait.h>   /* wait */
 #include <sys/stat.h>   /* open */
 #include <fcntl.h>      /* open */
+#include <signal.h>     /* sigaction */
+#include <time.h>       /* time, gettimeofday */
+#include <errno.h>      /* errno */
+
+#ifdef _WIN32
+#include <Winsock2.h>
+#else
+#include <unistd.h>     /* close */
+#include <sys/wait.h>   /* wait */
 #include <sys/socket.h> /* socket, bind, sendto, recvfrom, getsockname */
 #include <sys/un.h>     /* socket domaine AF_UNIX */
 #include <netinet/ip.h> /* socket domaine AF_INET */
 #include <arpa/inet.h>  /* inet_ntoa */
 #include <netdb.h>      /* gethostbyname */
-#include <signal.h>     /* sigaction */
 #include <sys/time.h>   /* gettimeofday */
-#include <time.h>       /* time, gettimeofday */
-#include <errno.h>      /* errno */
-
+#endif
 
 /* Compatibilite avec C++ */
 #if defined(c_plusplus) && !defined(__cplusplus)
