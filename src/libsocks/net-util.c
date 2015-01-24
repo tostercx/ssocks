@@ -138,7 +138,7 @@ int new_listen_socket (const char *bindAddr, int nport, int backlog, struct sock
     TRACE(L_DEBUG, "server: port %d open", ntohs(addrS->sin_port));
       
     /* Ouverture du service ; le second param est le nb max de connexions
-       pendantes, limité à SOMAXCONN (=128 sur Linux) */
+       pendantes, limite a SOMAXCONN (=128 sur Linux) */
     if (listen (soc_ec, backlog) < 0) { perror ("listen"); return -1; }
     TRACE(L_NOTICE, "server: listening on %s", bor_adrtoa_in (addrS));
     
@@ -239,7 +239,11 @@ int set_non_blocking(int fd){
 #else
     /* Otherwise, use the old way of doing it */
     flags = 1;
+#ifndef _WIN32
     r = ioctl(fd, FIOBIO, &flags);
+#else
+    r = ioctlsocket(fd, FIONBIO, &flags);
+#endif
     if (r < 0) bor_perror (__func__);
     return r;
 #endif
