@@ -1,9 +1,7 @@
 language: c
 
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get -y install autotools-dev
-  - sudo apt-get -y install automake
+  - touch aclocal.m4 configure Makefile.am Makefile.in
 
 script:
   - ./configure
