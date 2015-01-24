@@ -23,4 +23,4 @@ all: $(EXE)
 
 $(EXE): $(OBJ)
   @$(CC) $(CFLAGS) /Fobin\ src\$(@B).c
-  @$(LD) /NOLOGO /out:$@ ws2_32.lib $<
+  @$(LD) /NOLOGO /out:$@ ws2_32.lib bin\$(@B).obj $**
