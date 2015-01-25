@@ -12,6 +12,7 @@
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <stdint.h>
 #define sockaddr_un sockaddr_in
 #else
 #include <unistd.h>     /* close */

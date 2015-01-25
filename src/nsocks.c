@@ -89,6 +89,14 @@ void netcat_like(s_socket *s){
 	fd_set set_read, set_write;
 	char buf[4096];
 	int buf_a = 0, buf_b = 0, k = 0;
+	
+	struct timeval t;
+	t.tv_sec = 0;
+#ifndef _WIN32
+	t.tv_usec = 100;
+#else
+  t.tv_usec = 0;
+#endif
 
 	while (boucle_princ){
 		FD_ZERO (&set_read);
@@ -107,24 +115,20 @@ void netcat_like(s_socket *s){
 		
 		// oh my... why windows, WHY???? U BROKE SELECT T___T
 		// might be useful: http://seclists.org/nmap-dev/2009/q1/612
-		
-		res = select (maxfd+1, &set_read, &set_write, NULL, NULL);
+
+		res = select (maxfd+1, &set_read, &set_write, NULL, &t);
         if (res > 0) {  /* Search eligible sockets */
-      
+
 			/* Read on stdin ? */
-#ifdef _WIN32
-      if(PeekStdin())
-#else
-			if (FD_ISSET (0, &set_read))
-#endif
-      {
-        TRACE(L_DEBUG, "got input");
+#ifndef _WIN32
+			if (FD_ISSET (0, &set_read)) {
 				k = read(0, buf+buf_b, sizeof(buf)-buf_b-1);
 				if ( k < 0 ) { perror("read stdin"); CLOSE_AND_CLEAN(s->soc); exit(1); }
 				if ( k == 0 ) { ERROR(L_DEBUG, "client: read 0 bytes on stdin"); boucle_princ = 0; }
 				//printf("client: read %d bytes in stdin\n", k);
 				buf_b += k;
 			}
+#endif
 
 			/* Read on socket ? */
 			if (FD_ISSET (s->soc, &set_read)){
@@ -138,7 +142,17 @@ void netcat_like(s_socket *s){
 				}
 #endif
 				k = recv(s->soc, buf+buf_b, sizeof(buf)-buf_b-1, 0);
-				if ( k < 0 ) { perror("read socket"); CLOSE_AND_CLEAN(s->soc); exit(1); }
+				if ( k < 0 ) {
+#ifdef _WIN32
+          // TODO: inspect WSAECONNABORTED/10053 after http rqs
+          // TODO: spam WSAGetLastError everywhere
+				  ERROR(L_NOTICE, "read failed with %d", WSAGetLastError());
+#else
+				  perror("read socket");
+#endif
+				  CLOSE_AND_CLEAN(s->soc);
+				  exit(1); 
+				}
 				if ( k == 0 ) { ERROR(L_DEBUG, "client: read 0 bytes!"); boucle_princ = 0; }
 				//printf("client: read %d bytes in socket\n", k);
 				k = write(1, buf, k);
@@ -170,6 +184,15 @@ void netcat_like(s_socket *s){
 
         } else if ( res == 0){
             /* Timeout */
+          
+#ifdef _WIN32
+          if(PeekStdin()) {
+            k = read(0, buf+buf_b, sizeof(buf)-buf_b-1);
+            if ( k < 0 ) { perror("read stdin"); CLOSE_AND_CLEAN(s->soc); exit(1); }
+            if ( k == 0 ) { ERROR(L_DEBUG, "client: read 0 bytes on stdin"); boucle_princ = 0; }
+            buf_b += k;
+          }
+#endif
 
         }else if (res < 0) {
 #ifdef _WIN32

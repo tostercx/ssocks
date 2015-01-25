@@ -30,11 +30,7 @@
 #define NET_UTIL__H
 
 
-#ifdef _WIN32
-#include <stdint.h>
-#else
-#include <netinet/ip.h>
-#endif
+#include "unisocket.h"
 #include <config.h>
 
 
