@@ -100,7 +100,7 @@ int new_connection(int soc_ec, s_client *tc, int ssl)
         //append_log_client(&tc[nc], "%s", bor_adrtoa_in(&adrC_tmp));
 		//set_non_blocking(tc[nc].soc.soc);
     } else {
-        close (soc_tmp);
+        CLOSE_SOCKET(soc_tmp);
         ERROR (L_NOTICE, "server: %s connection refused : too many clients!",
             bor_adrtoa_in(&adrC_tmp));
         return -1;

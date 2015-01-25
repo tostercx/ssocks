@@ -138,7 +138,7 @@ int new_listen_socket (const char *bindAddr, int nport, int backlog, struct sock
 
     /* Recovery of the port as network endian */
     if (bor_getsockname_in (soc_ec, addrS) < 0)
-      { perror ("getsockname ip"); close (soc_ec); return -1; }
+      { perror ("getsockname ip"); CLOSE_SOCKET(soc_ec); return -1; }
     TRACE(L_DEBUG, "server: port %d open", ntohs(addrS->sin_port));
       
     /* Ouverture du service ; le second param est le nb max de connexions

@@ -68,6 +68,16 @@ void capte_fin (int sig){
     boucle_princ = 0;
 }
 
+#ifdef _WIN32
+DWORD PeekStdin() {
+  HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
+  DWORD bytes_left;
+  PeekNamedPipe(handle, NULL, 0, NULL, &bytes_left, NULL);
+  return bytes_left;
+}
+#endif
+
+
 void netcat_like(s_socket *s){
 
 #ifndef _WIN32
@@ -84,19 +94,31 @@ void netcat_like(s_socket *s){
 		FD_ZERO (&set_read);
 		FD_ZERO (&set_write);
 
+#ifndef _WIN32
 		FD_SET (0, &set_read);
+#endif
 		FD_SET (s->soc, &set_read);
 		if (s->soc > maxfd) maxfd = s->soc; /* Fix maxfd */
-
+    
 		if ( buf_b - buf_a > 0 ){
 			FD_SET (s->soc, &set_write);
 		}
-
+		
+		
+		// oh my... why windows, WHY???? U BROKE SELECT T___T
+		// might be useful: http://seclists.org/nmap-dev/2009/q1/612
+		
 		res = select (maxfd+1, &set_read, &set_write, NULL, NULL);
         if (res > 0) {  /* Search eligible sockets */
-
+      
 			/* Read on stdin ? */
-			if (FD_ISSET (0, &set_read)){
+#ifdef _WIN32
+      if(PeekStdin())
+#else
+			if (FD_ISSET (0, &set_read))
+#endif
+      {
+        TRACE(L_DEBUG, "got input");
 				k = read(0, buf+buf_b, sizeof(buf)-buf_b-1);
 				if ( k < 0 ) { perror("read stdin"); CLOSE_AND_CLEAN(s->soc); exit(1); }
 				if ( k == 0 ) { ERROR(L_DEBUG, "client: read 0 bytes on stdin"); boucle_princ = 0; }
@@ -136,7 +158,7 @@ void netcat_like(s_socket *s){
 					continue;
 				}
 #endif
-				k = write(s->soc, buf+buf_a, buf_b - buf_a);
+				k = send(s->soc, buf+buf_a, buf_b - buf_a, 0);
 				if ( k < 0 ) { perror("write socket"); boucle_princ = 0; }
 				//printf("client: wrote %d bytes on socket\n", k);
 				buf_a += k;
@@ -150,8 +172,13 @@ void netcat_like(s_socket *s){
             /* Timeout */
 
         }else if (res < 0) {
+#ifdef _WIN32
+            ERROR(L_NOTICE, "select failed with %d", WSAGetLastError());
+            boucle_princ = 0;
+#else
             if (errno == EINTR) ; /* Received signal, it does nothing */
             else { perror ("select"); boucle_princ = 0; }
+#endif
         }
 	}
 }

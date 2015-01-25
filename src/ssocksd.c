@@ -348,7 +348,7 @@ fin_serveur:
     TRACE(L_NOTICE, "server: closing sockets ...");
     close_log();
     for (nc = 0; nc < MAXCLI; nc++) disconnection(&tc[nc]);
-    if (soc_ec != -1) close (soc_ec);
+    if (soc_ec != -1) CLOSE_SOCKET(soc_ec);
     if ( globalArgsServer.daemon == 1 )	removePID(PID_FILE);
 }
 

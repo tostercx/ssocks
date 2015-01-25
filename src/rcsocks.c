@@ -135,7 +135,7 @@ void new_connection_reverse (int soc_ec, s_client *tc, s_socket *socks_pool)
         //append_log_client(&tc[nc], "%s", bor_adrtoa_in(&adrC_tmp));
 		//set_non_blocking(tc[nc].soc);
     } else {
-        close (soc_tmp);
+        CLOSE_SOCKET(soc_tmp);
         ERROR (L_NOTICE, "server: %s connection refused : too many clients!",
             bor_adrtoa_in(&adrC_tmp));
     }
@@ -182,7 +182,7 @@ void new_connection_socket(int soc_ec, s_socket *tc, int ssl)
         //append_log_client(&tc[nc], "%s", bor_adrtoa_in(&adrC_tmp));
 		//set_non_blocking(tc[nc].soc);
     } else {
-        close (soc_tmp);
+        CLOSE_SOCKET(soc_tmp);
         ERROR (L_NOTICE, "server: %s connection refused : too many clients!",
             bor_adrtoa_in(&adrC_tmp));
     }
@@ -223,7 +223,15 @@ void server_relay(int port, int listen, int ssl){
     fd_set set_write;
     struct sockaddr_in addrS;
 
-
+   
+#ifdef _WIN32
+  WSADATA wsaData;
+  int wsaInit = WSAStartup(MAKEWORD(2,2), &wsaData);
+  if (wsaInit != 0){
+      ERROR(L_NOTICE, "WSAStartup failed: %d\n", wsaInit);
+      exit(1);
+  }
+#endif
 
     s_socket socks_pool[MAXCLI];
     s_client tc[MAXCLI];
@@ -291,9 +299,13 @@ fin_serveur:
 		ssl_cleaning();
 #endif
     printf ("Server: closing sockets ...\n");
-    if (soc_ec != -1) close (soc_ec);
+    if (soc_ec != -1) CLOSE_SOCKET(soc_ec);
     for (nc = 0; nc < MAXCLI; nc++) close_socket(&socks_pool[nc]);
     for (nc = 0; nc < MAXCLI; nc++) disconnection(&tc[nc]);
+    
+#ifdef _WIN32
+    WSACleanup();
+#endif
 }
 
 
