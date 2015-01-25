@@ -12,25 +12,25 @@ CI Builds:
 
 ------------------------------------------------------------------------
 Features:
-	- Configuration file
-	- Authentication file
-	- Generate a connection log file
-	- Daemon mode
-	- Server support bind mode
-	- Socks4 support (if authentication is enable socks4 is disable)
-	- Support choose of interface to bind
+  - Configuration file
+  - Authentication file
+  - Generate a connection log file
+  - Daemon mode
+  - Server support bind mode
+  - Socks4 support (if authentication is enable socks4 is disable)
+  - Support choose of interface to bind
 
 ------------------------------------------------------------------------
 TODO:
-	- IPV6 support
-	- UDP support
-	- Stock password with a hash ( md5 or sha256 )
-	- GSSAPI auth support ( maybe )
-	- Set number of client max ( actually 255 is in client.h MAXCLI var )
-	- Add --pid-file option to server 
-	- ssocks bind localhost, not all
-	- SSL implements out of RFC
-	
+  - IPV6 support
+  - UDP support
+  - Stock password with a hash ( md5 or sha256 )
+  - GSSAPI auth support ( maybe )
+  - Set number of client max ( actually 255 is in client.h MAXCLI var )
+  - Add --pid-file option to server 
+  - ssocks bind localhost, not all
+  - SSL implements out of RFC
+
 ------------------------------------------------------------------------
 Software:
   - nsocks is a netcat like through a socks5 (usefull to test socks server)
@@ -54,45 +54,55 @@ File:
 
 ------------------------------------------------------------------------
 More information see man page:
+
 ssocksd (1), nsocks (1), ssocks (1), ssocksd.auth (5), ssocksd.conf (5)
 rssocks (1), rcsocks (1)
 
 ------------------------------------------------------------------------
 Ubuntu/debian install:
-	dpkg -i ssocks_0.0.*-*_i386.deb
+
+  dpkg -i ssocks_0.0.*-*_i386.deb
 
 Warning: This package install the server with init script and start it
 with no authentication in the config file, so everybody can connect on.
 
 ------------------------------------------------------------------------
 Gentoo install:
+
 I've a ebuild with init script contact me if you want it
 
 ------------------------------------------------------------------------
 From source:
-	./configure && make
+
+  ./configure && make
 
 Warning: don't content init script
 
 ------------------------------------------------------------------------
 Warning, if you import from git, you need to do:
- $ ./bootstrap.sh
+
+  $ ./bootstrap.sh
  
 PS for me: To avoid to wait when you debug the server and some 
 socket don't close properly
- # echo 1 > /proc/sys/net/ipv4/tcp_tw_recycle
+
+  # echo 1 > /proc/sys/net/ipv4/tcp_tw_recycle
+  
+To compile with dynamic lib
+
+  $ ./configure --disble-static
+  
+To enable SSL
+
+  $ ./configure with-ssl
  
- To compile with dynamic lib
- $ ./configure --disble-static
- 
- To enable SSL
- $ ./configure with-ssl
- 
- Just for remember (this by default actually)
- $ ./configure --enable-static --disable-shared
+Just for remember (this by default actually)
+
+  $ ./configure --enable-static --disable-shared
  
 PS: for test and debug authentication
- $ curl -U admin:abcde --socks5 127.0.0.1:1080 www.perdu.com
+
+  $ curl -U admin:abcde --socks5 127.0.0.1:1080 www.perdu.com
 
 ------------------------------------------------------------------------
 Copyright (C) 2011 by Hugo Caron
