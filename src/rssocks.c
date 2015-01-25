@@ -165,7 +165,7 @@ void reverse_server(char *sockshost, int socksport,
         k = init_select_server_reverse(tc, &maxfd, ncon,
                                        &set_read, &set_write, ssl);
         if ( k < 0 ) {
-            goto fin_serveur;
+            break;
         }
         res = select (maxfd+1, &set_read, &set_write, NULL, NULL);
 
@@ -183,12 +183,11 @@ void reverse_server(char *sockshost, int socksport,
             if (errno == EINTR) ; /* Received signal, it does nothing */
             else {
                 perror ("select");
-                goto fin_serveur;
+                break;
             }
         }
     }
 
-fin_serveur:
 #ifdef HAVE_LIBSSL
     if (ssl == 1)
         ssl_cleaning();
