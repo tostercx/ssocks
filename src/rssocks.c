@@ -45,6 +45,10 @@
 
 #define PORT 1080
 
+// global to prevent messing with the stack
+// see http://stackoverflow.com/questions/1847789/segmentation-fault-on-large-array-sizes
+s_client tc[MAXCLI];
+
 struct globalArgs_t {
     char *host;				// -h option
     unsigned int port;		// -p option
@@ -99,8 +103,6 @@ void reverse_server(char *sockshost, int socksport,
     int soc_ec = -1, maxfd, res, nc, k;
     fd_set set_read;
     fd_set set_write;
-
-    s_client tc[MAXCLI];
 
     s_socks_conf conf;
     s_socks_client_config config_cli;
