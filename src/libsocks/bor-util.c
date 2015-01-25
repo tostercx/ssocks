@@ -13,7 +13,9 @@
 */
 void bor_perror (const char *funcname)
 {
-    int e = errno; perror (funcname); errno = e;
+    int e = errno;
+    perror (funcname);
+    errno = e;
 }
 
 
@@ -59,7 +61,7 @@ int bor_bind_un (int soc, struct sockaddr_un *adr)
 int bor_sendto_un (int soc, void *buf, size_t len, struct sockaddr_un *adr)
 {
     int r = sendto (soc, buf, len, 0, (struct sockaddr *) adr,
-        sizeof(struct sockaddr_un));
+                    sizeof(struct sockaddr_un));
     if (r < 0) bor_perror (__func__);
     return r;
 }
@@ -117,7 +119,7 @@ int bor_bind_in (int soc, struct sockaddr_in *adr)
 int bor_sendto_in (int soc, void *buf, size_t len, struct sockaddr_in *adr)
 {
     int r = sendto (soc, buf, len, 0, (struct sockaddr *) adr,
-        sizeof(struct sockaddr_in));
+                    sizeof(struct sockaddr_in));
     if (r < 0) bor_perror (__func__);
     return r;
 }

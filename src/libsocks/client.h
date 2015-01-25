@@ -33,19 +33,19 @@
 #define MAXCLI 512
 #define BUFFER_SIZE 4096
 
-typedef struct{
-	int id;
+typedef struct {
+    int id;
 
-	s_socket soc;
-	s_socks socks;
-	s_buffer buf;
+    s_socket soc;
+    s_socks socks;
+    s_buffer buf;
 
-	s_socket soc_stream;
-	s_socks socks_stream;
-	s_buffer stream_buf;
+    s_socket soc_stream;
+    s_socks socks_stream;
+    s_buffer stream_buf;
 
-	s_socket soc_bind;
-	s_socks_conf *conf;
+    s_socket soc_bind;
+    s_socks_conf *conf;
 } s_client;
 
 

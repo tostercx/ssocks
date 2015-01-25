@@ -46,105 +46,105 @@
 #define PORT 1080
 
 struct globalArgs_t {
-	char *host;				// -h option
-	unsigned int port;		// -p option
-	unsigned int verbosity;	// -v
-	unsigned int background;// -b
+    char *host;				// -h option
+    unsigned int port;		// -p option
+    unsigned int verbosity;	// -v
+    unsigned int background;// -b
 
 #ifdef HAVE_LIBSSL
-	unsigned int ssl;		// -k option
-	char *certfile;			// -c option
+    unsigned int ssl;		// -k option
+    char *certfile;			// -c option
 #endif
 
-	char *uname;			// -u option
-	char *passwd;			// -p option
+    char *uname;			// -u option
+    char *passwd;			// -p option
 
-	char *sockshost;		// -s host:port
-	int socksport;
+    char *sockshost;		// -s host:port
+    int socksport;
 
-	int ncon;				// -n option
+    int ncon;				// -n option
 } globalArgs;
 
 int boucle_princ = 1;
-void capte_fin (int sig){
+void capte_fin (int sig) {
     TRACE(L_VERBOSE, "server: signal %d caught\n", sig);
     boucle_princ = 0;
 }
 
-void usage(char *name){
-	printf("rsSocks Reverse Socks5 Server v%s\n", PACKAGE_VERSION);
-	printf("It's a reverse socks5 server, you set the socks arg (host:port)\n");
-	printf("to your rcsocks instance. It connect back on and wait for request\n");
-	printf("Usage:\n");
-	printf("\t%s --socks rcsocksserv:1080 -b\n", name);
-	printf("\t%s --socks rcsocksserv:1080\n", name);
-	//printf("\t%s --socks socksserv.com:1080 --uname admin --passwd abcde\n", name);
-	//printf("\t%s -s socksserv.com:1080 -u admin -p abcde -l 1080 -b\n", name);
-	printf("Options:\n");
-	printf("\t--verbose (increase verbose level)\n\n");
-	printf("\t--socks {host:port}\n");
-	printf("\t--ncon {nb of reverse connection}\n");
-	//printf("\t--uname {uname}\n");
-	//printf("\t--passwd {passwd}\n");
+void usage(char *name) {
+    printf("rsSocks Reverse Socks5 Server v%s\n", PACKAGE_VERSION);
+    printf("It's a reverse socks5 server, you set the socks arg (host:port)\n");
+    printf("to your rcsocks instance. It connect back on and wait for request\n");
+    printf("Usage:\n");
+    printf("\t%s --socks rcsocksserv:1080 -b\n", name);
+    printf("\t%s --socks rcsocksserv:1080\n", name);
+    //printf("\t%s --socks socksserv.com:1080 --uname admin --passwd abcde\n", name);
+    //printf("\t%s -s socksserv.com:1080 -u admin -p abcde -l 1080 -b\n", name);
+    printf("Options:\n");
+    printf("\t--verbose (increase verbose level)\n\n");
+    printf("\t--socks {host:port}\n");
+    printf("\t--ncon {nb of reverse connection}\n");
+    //printf("\t--uname {uname}\n");
+    //printf("\t--passwd {passwd}\n");
 #ifdef HAVE_LIBSSL
-	printf("\t--cert  {certfile.crt} Certificate of dst server (enable SSL)\n");
+    printf("\t--cert  {certfile.crt} Certificate of dst server (enable SSL)\n");
 #endif
-	printf("\t--background\n");
-	printf("\n");
-	printf("Bug report %s\n", PACKAGE_BUGREPORT);
+    printf("\t--background\n");
+    printf("\n");
+    printf("Bug report %s\n", PACKAGE_BUGREPORT);
 }
 
 void reverse_server(char *sockshost, int socksport,
-		char *uname, char *passwd, int ssl, int ncon){
+                    char *uname, char *passwd, int ssl, int ncon) {
     int soc_ec = -1, maxfd, res, nc, k;
     fd_set set_read;
     fd_set set_write;
 
     s_client tc[MAXCLI];
 
-	s_socks_conf conf;
-	s_socks_client_config config_cli;
-	s_socks_server_config config_srv;
+    s_socks_conf conf;
+    s_socks_client_config config_cli;
+    s_socks_server_config config_srv;
 
-	conf.config.cli = &config_cli;
-	conf.config.srv = &config_srv;
+    conf.config.cli = &config_cli;
+    conf.config.srv = &config_srv;
 
-	char method[] =  { 0x00, 0x02 };
-	char version[] = { SOCKS5_V };
-	conf.config.srv->n_allowed_version = 1;
-	conf.config.srv->allowed_version = version;
-	conf.config.srv->n_allowed_method = 1;
-	conf.config.srv->allowed_method = method;
+    char method[] =  { 0x00, 0x02 };
+    char version[] = { SOCKS5_V };
+    conf.config.srv->n_allowed_version = 1;
+    conf.config.srv->allowed_version = version;
+    conf.config.srv->n_allowed_method = 1;
+    conf.config.srv->allowed_method = method;
 
 
-	conf.config.cli->n_allowed_method = 2;
-	conf.config.cli->allowed_method = method;
+    conf.config.cli->n_allowed_method = 2;
+    conf.config.cli->allowed_method = method;
 
-	/* If no username or password  we don't use auth */
-	if ( uname == NULL || passwd == NULL )
-		--conf.config.cli->n_allowed_method;
+    /* If no username or password  we don't use auth */
+    if ( uname == NULL || passwd == NULL )
+        --conf.config.cli->n_allowed_method;
 
-	conf.config.cli->loop = 1;
-	conf.config.cli->host = NULL;
-	conf.config.cli->port = 0;
-	conf.config.cli->sockshost = sockshost;
-	conf.config.cli->socksport = socksport;
-	conf.config.cli->username = uname;
-	conf.config.cli->password = passwd;
-	conf.config.cli->version = version[0];
+    conf.config.cli->loop = 1;
+    conf.config.cli->host = NULL;
+    conf.config.cli->port = 0;
+    conf.config.cli->sockshost = sockshost;
+    conf.config.cli->socksport = socksport;
+    conf.config.cli->username = uname;
+    conf.config.cli->password = passwd;
+    conf.config.cli->version = version[0];
 
     /* Init client tab */
     for (nc = 0; nc < MAXCLI; nc++) init_client (&tc[nc], nc, M_SERVER, &conf);
 
 
 #ifndef _WIN32
-	if ( globalArgs.background == 1 ){
-		TRACE(L_NOTICE, "server: background ...");
-		if ( daemon(0, 0) != 0 ){
-			perror("daemon");
-			exit(1);
-		}
-	}
+    if ( globalArgs.background == 1 ) {
+        TRACE(L_NOTICE, "server: background ...");
+        if ( daemon(0, 0) != 0 ) {
+            perror("daemon");
+            exit(1);
+        }
+    }
 
     bor_signal (SIGINT, capte_fin, SA_RESTART);
 #endif
@@ -152,176 +152,182 @@ void reverse_server(char *sockshost, int socksport,
 
     while (boucle_princ) {
         k = init_select_server_reverse(tc, &maxfd, ncon,
-			&set_read, &set_write, ssl);
-        if ( k < 0 ){ goto fin_serveur; }
+                                       &set_read, &set_write, ssl);
+        if ( k < 0 ) {
+            goto fin_serveur;
+        }
         res = select (maxfd+1, &set_read, &set_write, NULL, NULL);
 
         if (res > 0) { /* Search eligible sockets */
-            for (nc = 0; nc < MAXCLI; nc++){
-				k = dispatch_server(&tc[nc], &set_read, &set_write);
-				if (k == -2 ){
-					boucle_princ = 0;
-					break;
-				}
-			}
-        } else if ( res == 0){
+            for (nc = 0; nc < MAXCLI; nc++) {
+                k = dispatch_server(&tc[nc], &set_read, &set_write);
+                if (k == -2 ) {
+                    boucle_princ = 0;
+                    break;
+                }
+            }
+        } else if ( res == 0) {
 
-        }else if (res < 0) {
+        } else if (res < 0) {
             if (errno == EINTR) ; /* Received signal, it does nothing */
-            else { perror ("select"); goto fin_serveur; }
+            else {
+                perror ("select");
+                goto fin_serveur;
+            }
         }
     }
 
 fin_serveur:
 #ifdef HAVE_LIBSSL
-	if (ssl == 1)
-		ssl_cleaning();
+    if (ssl == 1)
+        ssl_cleaning();
 #endif
-	printf ("Server: closing sockets ...\n");
-	if (soc_ec != -1) CLOSE_SOCKET(soc_ec);
-	for (nc = 0; nc < MAXCLI; nc++) disconnection(&tc[nc]);
+    printf ("Server: closing sockets ...\n");
+    if (soc_ec != -1) CLOSE_SOCKET(soc_ec);
+    for (nc = 0; nc < MAXCLI; nc++) disconnection(&tc[nc]);
 }
 
 
-void parse_arg(int argc, char *argv[]){
-	memset(&globalArgs, 0, sizeof(globalArgs));
-	globalArgs.ncon = 25;
-	int c;
-	while (1){
-		static struct option long_options[] = {
-			{"help",    no_argument,       0, 'h'},
-			{"verbose", no_argument,       0, 'v'},
-			{"background", no_argument,    0, 'b'},
-			{"socks",   required_argument, 0, 's'},
-			{"uname",   required_argument, 0, 'u'},
-			{"passwd",  required_argument, 0, 'p'},
-			{"ncon",    required_argument, 0, 'n'},
+void parse_arg(int argc, char *argv[]) {
+    memset(&globalArgs, 0, sizeof(globalArgs));
+    globalArgs.ncon = 25;
+    int c;
+    while (1) {
+        static struct option long_options[] = {
+            {"help",    no_argument,       0, 'h'},
+            {"verbose", no_argument,       0, 'v'},
+            {"background", no_argument,    0, 'b'},
+            {"socks",   required_argument, 0, 's'},
+            {"uname",   required_argument, 0, 'u'},
+            {"passwd",  required_argument, 0, 'p'},
+            {"ncon",    required_argument, 0, 'n'},
 #ifdef HAVE_LIBSSL
-			{"cert",      required_argument, 0, 'c'},
+            {"cert",      required_argument, 0, 'c'},
 #endif
-			{0, 0, 0, 0}
-		};
+            {0, 0, 0, 0}
+        };
 
-		/* getopt_long stores the option index here. */
-		int option_index = 0;
+        /* getopt_long stores the option index here. */
+        int option_index = 0;
 
-		c = getopt_long (argc, argv, "h?bvc:s:u:p:l:n:",
-					long_options, &option_index);
+        c = getopt_long (argc, argv, "h?bvc:s:u:p:l:n:",
+                         long_options, &option_index);
 
-		/* Detect the end of the options. */
-		if (c == -1)
-			break;
+        /* Detect the end of the options. */
+        if (c == -1)
+            break;
 
-		char *port;
+        char *port;
 
-		switch (c)	{
-			case 0:
-				/* If this option set a flag, do nothing else now. */
-				if (long_options[option_index].flag != 0)
-					break;
-				printf ("option %s", long_options[option_index].name);
-				if (optarg)
-					printf (" with arg %s", optarg);
-				printf ("\n");
-				break;
+        switch (c)	{
+        case 0:
+            /* If this option set a flag, do nothing else now. */
+            if (long_options[option_index].flag != 0)
+                break;
+            printf ("option %s", long_options[option_index].name);
+            if (optarg)
+                printf (" with arg %s", optarg);
+            printf ("\n");
+            break;
 
-			case 'v':
-				//globalArgs.verbosity++;
-				verbosity++;
-				break;
+        case 'v':
+            //globalArgs.verbosity++;
+            verbosity++;
+            break;
 
 #ifdef HAVE_LIBSSL
-			case 'c':
-				globalArgs.ssl = 1;
-				globalArgs.certfile = optarg;
-				break;
-			case 'k':
-				globalArgs.ssl = 1;
-				break;
+        case 'c':
+            globalArgs.ssl = 1;
+            globalArgs.certfile = optarg;
+            break;
+        case 'k':
+            globalArgs.ssl = 1;
+            break;
 #endif
 
-			case 'b':
-				globalArgs.background = 1;
-				break;
+        case 'b':
+            globalArgs.background = 1;
+            break;
 
-			case 's':
+        case 's':
 
-				port = strchr(optarg, ':');
-				if ( port == NULL ){
-					usage(argv[0]);
-					exit(1);
-				}
-				*port = 0; port++;
-				globalArgs.sockshost = optarg;
-				globalArgs.socksport = atoi(port);
-				/*printf("Connect trought socks %s:%d\n",
-					globalArgs.sockshost, globalArgs.socksport);*/
-				break;
+            port = strchr(optarg, ':');
+            if ( port == NULL ) {
+                usage(argv[0]);
+                exit(1);
+            }
+            *port = 0;
+            port++;
+            globalArgs.sockshost = optarg;
+            globalArgs.socksport = atoi(port);
+            /*printf("Connect trought socks %s:%d\n",
+            	globalArgs.sockshost, globalArgs.socksport);*/
+            break;
 
-			case 'u':
-				/* printf("Username: %s\n", optarg); */
-				globalArgs.uname = optarg;
-				break;
+        case 'u':
+            /* printf("Username: %s\n", optarg); */
+            globalArgs.uname = optarg;
+            break;
 
-			case 'p':
-				/* printf("Passwd: %s\n", optarg); */
-				globalArgs.passwd = optarg;
-				break;
+        case 'p':
+            /* printf("Passwd: %s\n", optarg); */
+            globalArgs.passwd = optarg;
+            break;
 
-			case 'n':
-				globalArgs.ncon = atoi(optarg);
-				break;
+        case 'n':
+            globalArgs.ncon = atoi(optarg);
+            break;
 
-			case '?':
-				/* getopt_long already printed an error message. */
-				usage(argv[0]);
-				exit(1);
-				break;
+        case '?':
+            /* getopt_long already printed an error message. */
+            usage(argv[0]);
+            exit(1);
+            break;
 
-			case 'h':
-				usage(argv[0]);
-				exit(1);
-				break;
+        case 'h':
+            usage(argv[0]);
+            exit(1);
+            break;
 
-			default:
-				abort ();
-		}
-	}
+        default:
+            abort ();
+        }
+    }
 
-	if ( globalArgs.sockshost == NULL || globalArgs.socksport == 0 ){
-		usage(argv[0]);
-		exit(1);
-	}
+    if ( globalArgs.sockshost == NULL || globalArgs.socksport == 0 ) {
+        usage(argv[0]);
+        exit(1);
+    }
 #ifdef HAVE_LIBSSL
-	/*Initialize ssl with the CA certificate file
-	 */
-	if (globalArgs.certfile != NULL){
-		SSL_load_error_strings();  /* readable error messages */
-		SSL_library_init();        /* initialize library */
-		TRACE(L_VERBOSE, "client: init ssl ...");
-		if (globalArgs.certfile == NULL){
-			ERROR(L_NOTICE, "client: actually need CA certificate file");
-			exit(1);
-		}
-		if ( ssl_init_client(globalArgs.certfile) != 0){
-			ERROR(L_NOTICE, "client: ssl config error");
-			exit(1);
-		}
-		TRACE(L_VERBOSE, "client: ssl ok.");
-	}
+    /*Initialize ssl with the CA certificate file
+     */
+    if (globalArgs.certfile != NULL) {
+        SSL_load_error_strings();  /* readable error messages */
+        SSL_library_init();        /* initialize library */
+        TRACE(L_VERBOSE, "client: init ssl ...");
+        if (globalArgs.certfile == NULL) {
+            ERROR(L_NOTICE, "client: actually need CA certificate file");
+            exit(1);
+        }
+        if ( ssl_init_client(globalArgs.certfile) != 0) {
+            ERROR(L_NOTICE, "client: ssl config error");
+            exit(1);
+        }
+        TRACE(L_VERBOSE, "client: ssl ok.");
+    }
 #endif
 }
 
 
-int main (int argc, char *argv[]){
-	parse_arg(argc, argv);
-	reverse_server(globalArgs.sockshost, globalArgs.socksport,
-			globalArgs.uname, globalArgs.passwd,
+int main (int argc, char *argv[]) {
+    parse_arg(argc, argv);
+    reverse_server(globalArgs.sockshost, globalArgs.socksport,
+                   globalArgs.uname, globalArgs.passwd,
 #ifdef HAVE_LIBSSL
-			globalArgs.ssl,
+                   globalArgs.ssl,
 #else
-			0,
+                   0,
 #endif
-			globalArgs.ncon);
-	exit(0);
+                   globalArgs.ncon);
+    exit(0);
 }

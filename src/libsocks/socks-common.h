@@ -47,79 +47,79 @@
 typedef int (*pcheck_auth)(char *uname, char *passwd);
 
 /* Socks mode */
-enum{
-	M_SERVER, /* Server mode used by ssocksd */
+enum {
+    M_SERVER, /* Server mode used by ssocksd */
 
-	M_CLIENT, /* Client mode used by nsocks and ssocks */
+    M_CLIENT, /* Client mode used by nsocks and ssocks */
 
-	M_DYNAMIC, /* Run a server and listen, when it receive data
+    M_DYNAMIC, /* Run a server and listen, when it receive data
 				* it transmit it to a another socks server,
 				* used by ssocks */
-	M_DYNAMIC_CLIENT,
+    M_DYNAMIC_CLIENT,
 };
 
 /* Socks state */
 enum {
-	S_R_VER,		/* Read version */
-	S_W_VER,		/* Write version */
-	S_R_VER_ACK,	/* Read version ACK */
-	S_W_VER_ACK,	/* Write version ACK */
+    S_R_VER,		/* Read version */
+    S_W_VER,		/* Write version */
+    S_R_VER_ACK,	/* Read version ACK */
+    S_W_VER_ACK,	/* Write version ACK */
 
-	S_R_AUTH,		/* Read authentication */
-	S_W_AUTH,		/* Write authentication ACK */
-	S_R_AUTH_ACK,	/* Read authentication */
-	S_W_AUTH_ACK,	/* Write authentication ACK */
+    S_R_AUTH,		/* Read authentication */
+    S_W_AUTH,		/* Write authentication ACK */
+    S_R_AUTH_ACK,	/* Read authentication */
+    S_W_AUTH_ACK,	/* Write authentication ACK */
 
-	S_R_REQ,		/* Read authentication */
-	S_W_REQ,		/* Write authentication */
-	S_R_REQ_ACK,	/* Read authentication ACK */
-	S_W_REQ_ACK,	/* Write authentication ACK */
+    S_R_REQ,		/* Read authentication */
+    S_W_REQ,		/* Write authentication */
+    S_R_REQ_ACK,	/* Read authentication ACK */
+    S_W_REQ_ACK,	/* Write authentication ACK */
 
-	S_W_SSL_NEGO, 	/* Read SSL negociation */
-	S_R_SSL_NEGO,	/* Write SSL negociation */
+    S_W_SSL_NEGO, 	/* Read SSL negociation */
+    S_R_SSL_NEGO,	/* Write SSL negociation */
 
-	S_REPLY,		/* Read on a socket, write a another */
+    S_REPLY,		/* Read on a socket, write a another */
 
-	S_WAIT			/* Nothing to do just wait */
+    S_WAIT			/* Nothing to do just wait */
 };
 
 /* Configuration type enumeration */
 enum {
-	CONFIG_SERVER,
-	CONFIG_SERVER_DYNA,
-	CONFIG_CLIENT
+    CONFIG_SERVER,
+    CONFIG_SERVER_DYNA,
+    CONFIG_CLIENT
 };
 
 /* Socket structure need to used socket and ssl
  * side by side in the same code
  */
 typedef struct {
-	int soc;  /* Socket */
-	int con;  /* Connected flag to used with non blocking connect */
+    int soc;  /* Socket */
+    int con;  /* Connected flag to used with non blocking connect */
 #ifdef HAVE_LIBSSL
-	SSL *ssl; /* SSL socket */
+    SSL *ssl; /* SSL socket */
 #endif
-	int want_ssl; /* Trick for dynamic mode to know you need ssl*/
+    int want_ssl; /* Trick for dynamic mode to know you need ssl*/
 
-	struct sockaddr_in adrS; /* Socket server info */
-	struct sockaddr_in adrC; /* Socket client info */
+    struct sockaddr_in adrS; /* Socket server info */
+    struct sockaddr_in adrC; /* Socket client info */
 } s_socket;
 
 /* Socks5 information used to build packet
  */
 typedef struct {
-	int id;
-	int mode;	 	/* Socks mode */
-	int state;   	/* Socks state */
-	int version; 	/* Version choose, default -1 */
-	int method;	 	/* Authentication method choose, default -1 */
-	int auth; 	 	/* Authenticate flag, default 0 */
-	int connected;	/* Connected flag, default 0 */
-	int listen;		/* Listen flag in bind mode, default 0,
+    int id;
+    int mode;	 	/* Socks mode */
+    int state;   	/* Socks state */
+    int version; 	/* Version choose, default -1 */
+    int method;	 	/* Authentication method choose, default -1 */
+    int auth; 	 	/* Authenticate flag, default 0 */
+    int connected;	/* Connected flag, default 0 */
+    int listen;		/* Listen flag in bind mode, default 0,
 					 * if -1 error when accept */
-	int cmd;		/* Socks command request */
-	char uname[256];
-}s_socks;
+    int cmd;		/* Socks command request */
+    char uname[256];
+} s_socks;
 
 
 /* Socks5 server configuration */
@@ -132,53 +132,53 @@ typedef struct {
 
 /* Socks5 client configuration */
 typedef struct {
-	int cmd; 				/* CMD_CONNECT, CMD_BIND, CMD_UDP */
-	char *host;				/* Asking host */
-	int port;				/* Asking port */
-	int listen;				/* Asking bind port */
+    int cmd; 				/* CMD_CONNECT, CMD_BIND, CMD_UDP */
+    char *host;				/* Asking host */
+    int port;				/* Asking port */
+    int listen;				/* Asking bind port */
 
-	char *sockshost;		/* Socks5 destination host */
-	int socksport;			/* Socks5 port host */
+    char *sockshost;		/* Socks5 destination host */
+    int socksport;			/* Socks5 port host */
 
-	int version;			/* Socks version */
+    int version;			/* Socks version */
 
-	char *username;			/* Socks5 username */
-	char *password;			/* Socks5 password */
+    char *username;			/* Socks5 username */
+    char *password;			/* Socks5 password */
 
-	/* Set internally */
-	int loop;				/* Client loop */
-	char *allowed_method;   /* Accepted method,
+    /* Set internally */
+    int loop;				/* Client loop */
+    char *allowed_method;   /* Accepted method,
 							 * last need to be NULL */
-	size_t n_allowed_method;
+    size_t n_allowed_method;
 
-}s_socks_client_config;
+} s_socks_client_config;
 
 typedef struct {
-	size_t n_allowed_version;
-	char *allowed_version; /* Accepted version*/
+    size_t n_allowed_version;
+    char *allowed_version; /* Accepted version*/
 
-	char *allowed_method;  /* Accepted method */
-	size_t n_allowed_method;
+    char *allowed_method;  /* Accepted method */
+    size_t n_allowed_method;
 
-	pcheck_auth check_auth;
-}s_socks_server_config;
+    pcheck_auth check_auth;
+} s_socks_server_config;
 
 /* Socks5 configuration
  */
 typedef struct {
-	int type; /* CONFIG_SERVER, CONFIG_SERVER_DYNA, CONFIG_CLIENT */
-	struct {
-		s_socks_client_config *cli;
-		s_socks_server_config *srv;
-	}config;
-}s_socks_conf;
+    int type; /* CONFIG_SERVER, CONFIG_SERVER_DYNA, CONFIG_CLIENT */
+    struct {
+        s_socks_client_config *cli;
+        s_socks_server_config *srv;
+    } config;
+} s_socks_conf;
 
 
 /* Buffer definition
  */
 typedef struct {
-	char data[4096];
-	size_t pos, a, b;
+    char data[4096];
+    size_t pos, a, b;
 } s_buffer;
 
 /* Macro to read and write properly
@@ -216,75 +216,75 @@ void close_socket(s_socket *s);
  * ---------------------------------------------------------------------
  */
 
- /* Socks5 version packet */
+/* Socks5 version packet */
 typedef struct {
-	char ver;
-	char nmethods;
-	char methods[5];
+    char ver;
+    char nmethods;
+    char methods[5];
 } Socks5Version;
 
 /* Socks5 version packet ACK */
 #pragma pack(push, 2)
 typedef struct {
-	char ver;
-	char method;
+    char ver;
+    char method;
 } Socks5VersionACK;
 #pragma pack(pop)
 
 /* Socks5 authentication packet */
 typedef struct {
-	char ver;
-	char ulen;
-	char uname[256];
-	char plen;
-	char passwd[256];
+    char ver;
+    char ulen;
+    char uname[256];
+    char plen;
+    char passwd[256];
 } Socks5Auth;
 
 /* Socks5 authentication packet ACK */
 #pragma pack(push, 2)
 typedef struct {
-	char ver;
-	char status;
+    char ver;
+    char status;
 } Socks5AuthACK;
 #pragma pack(pop)
 
 /* Socks5 request packet */
 typedef struct {
-	char ver;
-	char cmd;
-	char rsv;
-	char atyp;
-	/*char dstadr;
-	unsigned short dstport;*/
+    char ver;
+    char cmd;
+    char rsv;
+    char atyp;
+    /*char dstadr;
+    unsigned short dstport;*/
 } Socks5Req;
 
 /* Socks5 request packet ACK
  * Need to change alignment 4 -> 2  else sizeof 12 instead of 10 */
 #pragma pack(push, 2) /* Change alignment 4 -> 2 */
 typedef struct {
-	char ver;
-	char rep;
-	char rsv;
-	char atyp;
-	struct in_addr bndaddr; /* uint32_t */
-	uint16_t  bndport;
+    char ver;
+    char rep;
+    char rsv;
+    char atyp;
+    struct in_addr bndaddr; /* uint32_t */
+    uint16_t  bndport;
 } Socks5ReqACK;
 
 
 typedef struct {
-	char ver;
-	char cmd;
-	uint16_t dstport;
-	char dstadr[4];
-	char *uid;
-}Socks4Req;
+    char ver;
+    char cmd;
+    uint16_t dstport;
+    char dstadr[4];
+    char *uid;
+} Socks4Req;
 
-typedef struct{
-	char ver; /* Need to be null */
-	char rep;
-	char ign[2];
-	char ign2[4];
-}Socks4ReqAck;
+typedef struct {
+    char ver; /* Need to be null */
+    char rep;
+    char ign[2];
+    char ign2[4];
+} Socks4ReqAck;
 
 #pragma pack(pop) /* End of change alignment */
 

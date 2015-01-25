@@ -34,13 +34,13 @@
 
 
 int build_request_accept_bind(s_socks *s, s_socks_conf *c,
-		s_socket *stream, s_socket *bind, s_buffer *buf);
+                              s_socket *stream, s_socket *bind, s_buffer *buf);
 void build_request_ack(s_socks *s, s_socks_conf *c,
-		s_socket *stream, s_socket *bind, s_buffer *buf);
+                       s_socket *stream, s_socket *bind, s_buffer *buf);
 
 int test_request_dynamic(s_socks *s, s_socks_conf *c, s_buffer *buf);
 int analyse_request(s_socks *s, s_socket *stream, s_socket *bind,
-		s_socks_conf *c, s_buffer *buf);
+                    s_socks_conf *c, s_buffer *buf);
 
 void build_auth_ack(s_socks *s, s_socks_conf *c, s_buffer *buf);
 int test_auth(s_socks *s, s_socks_conf *c, s_buffer *buf);
@@ -52,10 +52,10 @@ int test_version(s_socks *s, s_socks_conf *c, s_buffer *buf);
 int dispatch_server(s_client *client, fd_set *set_read, fd_set *set_write);
 
 int dispatch_server_read(s_socket *soc, s_socket *soc_stream, s_socket *soc_bind,
-		s_socks *socks, s_buffer *buf, s_buffer *buf_stream, s_socks_conf *conf);
+                         s_socks *socks, s_buffer *buf, s_buffer *buf_stream, s_socks_conf *conf);
 
 int dispatch_server_write(s_socket *soc, s_socket *soc_stream, s_socks *socks,
-		s_buffer *buf, s_socks_conf *conf);
+                          s_buffer *buf, s_socks_conf *conf);
 
 /* TODO: Implement this function:
 void dispatch_server(s_socket *soc, s_socket *soc_stream, s_socket *soc_bind,
@@ -64,15 +64,15 @@ void dispatch_server(s_socket *soc, s_socket *soc_stream, s_socket *soc_bind,
 */
 
 void init_select_server_stream (s_socket *soc, s_socks *socks, s_buffer *buf,
-		s_buffer *buf_stream, int *maxfd,	fd_set *set_read, fd_set *set_write);
+                                s_buffer *buf_stream, int *maxfd,	fd_set *set_read, fd_set *set_write);
 void init_select_server_cli (s_socket *soc,	s_socks *s, s_buffer *buf,
-		s_buffer *buf_stream, int *maxfd,	fd_set *set_read, fd_set *set_write);
+                             s_buffer *buf_stream, int *maxfd,	fd_set *set_read, fd_set *set_write);
 
 void init_select_server (int soc_ec, s_client *tc, int *maxfd,
-		fd_set *set_read, fd_set *set_write);
+                         fd_set *set_read, fd_set *set_write);
 
 int init_select_server_reverse (s_client *tc, int *maxfd,
-		int ncon, fd_set *set_read, fd_set *set_write, int ssl);
+                                int ncon, fd_set *set_read, fd_set *set_write, int ssl);
 
 #endif /* SOCKS5_SERVER__H */
 

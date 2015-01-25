@@ -39,22 +39,22 @@ int test_request_ack(s_socks *s, s_socks_conf *c, s_buffer *buf);
 
 
 int dispatch_client_write(s_socket *soc, s_socks *socks,
-		s_buffer *buf, s_socks_conf *conf);
+                          s_buffer *buf, s_socks_conf *conf);
 int dispatch_client_read(s_socket *soc, s_socket *soc_stream,
-		s_socks *socks, s_buffer *buf, s_buffer *buf_stream, s_socks_conf *conf);
+                         s_socks *socks, s_buffer *buf, s_buffer *buf_stream, s_socks_conf *conf);
 
 void dispatch_client(s_client *client, fd_set *set_read, fd_set *set_write);
 
 void dispatch_dynamic(s_client *client, fd_set *set_read, fd_set *set_write);
 
 void init_select_client (s_socket *soc, s_socks *s, s_buffer *buf, int *maxfd,
-		fd_set *set_read, fd_set *set_write);
+                         fd_set *set_read, fd_set *set_write);
 
 void init_select_dynamic (int soc_ec, s_client *tc, int *maxfd,
-		fd_set *set_read, fd_set *set_write);
+                          fd_set *set_read, fd_set *set_write);
 
 int new_socket_with_socks(s_socket *s,
-		char *sockshost, int socksport,
-		char *username, char *password,
-		char *host, int port, int listen,
-		int version, int ssl, int cmd);
+                          char *sockshost, int socksport,
+                          char *username, char *password,
+                          char *host, int port, int listen,
+                          int version, int ssl, int cmd);

@@ -44,392 +44,426 @@
 
 
 struct globalArgs_t {
-	char *host;				// -h option
-	unsigned int port;		// -p option
-	unsigned int listen;	// -l option
-	unsigned int verbosity;	// -v
+    char *host;				// -h option
+    unsigned int port;		// -p option
+    unsigned int listen;	// -l option
+    unsigned int verbosity;	// -v
 
 #ifdef HAVE_LIBSSL
-	unsigned int ssl;		// -k option
-	char *certfile;			// -c option
+    unsigned int ssl;		// -k option
+    char *certfile;			// -c option
 #endif
 
-	char *uname;			// -u option
-	char *passwd;			// -p option
+    char *uname;			// -u option
+    char *passwd;			// -p option
 
-	char *sockshost;		// -s host:port
-	int socksport;
+    char *sockshost;		// -s host:port
+    int socksport;
 
 } globalArgs;
 
 int boucle_princ = 1;
-void capte_fin (int sig){
+void capte_fin (int sig) {
     TRACE(L_VERBOSE, "client: signal %d caught\n", sig);
     boucle_princ = 0;
 }
 
 #ifdef _WIN32
 DWORD PeekStdin() {
-  HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
-  DWORD bytes_left;
-  PeekNamedPipe(handle, NULL, 0, NULL, &bytes_left, NULL);
-  return bytes_left;
+    HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD bytes_left;
+    PeekNamedPipe(handle, NULL, 0, NULL, &bytes_left, NULL);
+    return bytes_left;
 }
 #endif
 
 
-void netcat_like(s_socket *s){
+void netcat_like(s_socket *s) {
 
 #ifndef _WIN32
-	/* Catch CTRL-C */
+    /* Catch CTRL-C */
     bor_signal (SIGINT, capte_fin, SA_RESTART);
 #endif
 
-	int maxfd=0, res;
-	fd_set set_read, set_write;
-	char buf[4096];
-	int buf_a = 0, buf_b = 0, k = 0;
-	
-	struct timeval t;
-	t.tv_sec = 0;
+    int maxfd=0, res;
+    fd_set set_read, set_write;
+    char buf[4096];
+    int buf_a = 0, buf_b = 0, k = 0;
+
+    struct timeval t;
+    t.tv_sec = 0;
 #ifndef _WIN32
-	t.tv_usec = 100;
+    t.tv_usec = 100;
 #else
-  t.tv_usec = 0;
+    t.tv_usec = 0;
 #endif
 
-	while (boucle_princ){
-		FD_ZERO (&set_read);
-		FD_ZERO (&set_write);
+    while (boucle_princ) {
+        FD_ZERO (&set_read);
+        FD_ZERO (&set_write);
 
 #ifndef _WIN32
-		FD_SET (0, &set_read);
+        FD_SET (0, &set_read);
 #endif
-		FD_SET (s->soc, &set_read);
-		if (s->soc > maxfd) maxfd = s->soc; /* Fix maxfd */
-    
-		if ( buf_b - buf_a > 0 ){
-			FD_SET (s->soc, &set_write);
-		}
-		
-		
-		// oh my... why windows, WHY???? U BROKE SELECT T___T
-		// might be useful: http://seclists.org/nmap-dev/2009/q1/612
+        FD_SET (s->soc, &set_read);
+        if (s->soc > maxfd) maxfd = s->soc; /* Fix maxfd */
 
-		res = select (maxfd+1, &set_read, &set_write, NULL, &t);
+        if ( buf_b - buf_a > 0 ) {
+            FD_SET (s->soc, &set_write);
+        }
+
+
+        // oh my... why windows, WHY???? U BROKE SELECT T___T
+        // might be useful: http://seclists.org/nmap-dev/2009/q1/612
+
+        res = select (maxfd+1, &set_read, &set_write, NULL, &t);
         if (res > 0) {  /* Search eligible sockets */
 
-			/* Read on stdin ? */
+            /* Read on stdin ? */
 #ifndef _WIN32
-			if (FD_ISSET (0, &set_read)) {
-				k = read(0, buf+buf_b, sizeof(buf)-buf_b-1);
-				if ( k < 0 ) { perror("read stdin"); CLOSE_AND_CLEAN(s->soc); exit(1); }
-				if ( k == 0 ) { ERROR(L_DEBUG, "client: read 0 bytes on stdin"); boucle_princ = 0; }
-				//printf("client: read %d bytes in stdin\n", k);
-				buf_b += k;
-			}
+            if (FD_ISSET (0, &set_read)) {
+                k = read(0, buf+buf_b, sizeof(buf)-buf_b-1);
+                if ( k < 0 ) {
+                    perror("read stdin");
+                    CLOSE_AND_CLEAN(s->soc);
+                    exit(1);
+                }
+                if ( k == 0 ) {
+                    ERROR(L_DEBUG, "client: read 0 bytes on stdin");
+                    boucle_princ = 0;
+                }
+                //printf("client: read %d bytes in stdin\n", k);
+                buf_b += k;
+            }
 #endif
 
-			/* Read on socket ? */
-			if (FD_ISSET (s->soc, &set_read)){
+            /* Read on socket ? */
+            if (FD_ISSET (s->soc, &set_read)) {
 #ifdef HAVE_LIBSSL
-				if ( s->ssl != NULL ){
-					k = SSL_read(s->ssl, buf+buf_b, sizeof(buf)-buf_b-1);
-					if (k < 0){ perror("read socket"); CLOSE_AND_CLEAN(s->soc); exit(1); }
-					if (k == 0){ ERROR(L_DEBUG, "client: read 0 bytes!"); boucle_princ = 0; }
-					k = write(1, buf, k);
-					continue;
-				}
+                if ( s->ssl != NULL ) {
+                    k = SSL_read(s->ssl, buf+buf_b, sizeof(buf)-buf_b-1);
+                    if (k < 0) {
+                        perror("read socket");
+                        CLOSE_AND_CLEAN(s->soc);
+                        exit(1);
+                    }
+                    if (k == 0) {
+                        ERROR(L_DEBUG, "client: read 0 bytes!");
+                        boucle_princ = 0;
+                    }
+                    k = write(1, buf, k);
+                    continue;
+                }
 #endif
-				k = recv(s->soc, buf+buf_b, sizeof(buf)-buf_b-1, 0);
-				if ( k < 0 ) {
+                k = recv(s->soc, buf+buf_b, sizeof(buf)-buf_b-1, 0);
+                if ( k < 0 ) {
 #ifdef _WIN32
-          // TODO: inspect WSAECONNABORTED/10053 after http rqs
-          // TODO: spam WSAGetLastError everywhere
-				  ERROR(L_NOTICE, "read failed with %d", WSAGetLastError());
+                    // TODO: inspect WSAECONNABORTED/10053 after http rqs
+                    // TODO: spam WSAGetLastError everywhere
+                    ERROR(L_NOTICE, "read failed with %d", WSAGetLastError());
 #else
-				  perror("read socket");
+                    perror("read socket");
 #endif
-				  CLOSE_AND_CLEAN(s->soc);
-				  exit(1); 
-				}
-				if ( k == 0 ) { ERROR(L_DEBUG, "client: read 0 bytes!"); boucle_princ = 0; }
-				//printf("client: read %d bytes in socket\n", k);
-				k = write(1, buf, k);
-			}
+                    CLOSE_AND_CLEAN(s->soc);
+                    exit(1);
+                }
+                if ( k == 0 ) {
+                    ERROR(L_DEBUG, "client: read 0 bytes!");
+                    boucle_princ = 0;
+                }
+                //printf("client: read %d bytes in socket\n", k);
+                k = write(1, buf, k);
+            }
 
-			/* Write on socket ? */
-			if(FD_ISSET (s->soc, &set_write)){
+            /* Write on socket ? */
+            if(FD_ISSET (s->soc, &set_write)) {
 #ifdef HAVE_LIBSSL
-				if ( s->ssl != NULL ){
-					k = SSL_write(s->ssl, buf+buf_a, buf_b - buf_a);
-					if (k < 0){perror("write socket"); boucle_princ = 0; }
-					buf_a += k;
-					if ( buf_b - buf_a == 0 ){
-						buf_b = 0;
-						buf_a = 0;
-					}
-					continue;
-				}
+                if ( s->ssl != NULL ) {
+                    k = SSL_write(s->ssl, buf+buf_a, buf_b - buf_a);
+                    if (k < 0) {
+                        perror("write socket");
+                        boucle_princ = 0;
+                    }
+                    buf_a += k;
+                    if ( buf_b - buf_a == 0 ) {
+                        buf_b = 0;
+                        buf_a = 0;
+                    }
+                    continue;
+                }
 #endif
-				k = send(s->soc, buf+buf_a, buf_b - buf_a, 0);
-				if ( k < 0 ) { perror("write socket"); boucle_princ = 0; }
-				//printf("client: wrote %d bytes on socket\n", k);
-				buf_a += k;
-				if ( buf_b - buf_a == 0 ){
-					buf_b = 0;
-					buf_a = 0;
-				}
-			}
+                k = send(s->soc, buf+buf_a, buf_b - buf_a, 0);
+                if ( k < 0 ) {
+                    perror("write socket");
+                    boucle_princ = 0;
+                }
+                //printf("client: wrote %d bytes on socket\n", k);
+                buf_a += k;
+                if ( buf_b - buf_a == 0 ) {
+                    buf_b = 0;
+                    buf_a = 0;
+                }
+            }
 
-        } else if ( res == 0){
+        } else if ( res == 0) {
             /* Timeout */
-          
+
 #ifdef _WIN32
-          if(PeekStdin()) {
-            k = read(0, buf+buf_b, sizeof(buf)-buf_b-1);
-            if ( k < 0 ) { perror("read stdin"); CLOSE_AND_CLEAN(s->soc); exit(1); }
-            if ( k == 0 ) { ERROR(L_DEBUG, "client: read 0 bytes on stdin"); boucle_princ = 0; }
-            buf_b += k;
-          }
+            if(PeekStdin()) {
+                k = read(0, buf+buf_b, sizeof(buf)-buf_b-1);
+                if ( k < 0 ) {
+                    perror("read stdin");
+                    CLOSE_AND_CLEAN(s->soc);
+                    exit(1);
+                }
+                if ( k == 0 ) {
+                    ERROR(L_DEBUG, "client: read 0 bytes on stdin");
+                    boucle_princ = 0;
+                }
+                buf_b += k;
+            }
 #endif
 
-        }else if (res < 0) {
+        } else if (res < 0) {
 #ifdef _WIN32
             ERROR(L_NOTICE, "select failed with %d", WSAGetLastError());
             boucle_princ = 0;
 #else
             if (errno == EINTR) ; /* Received signal, it does nothing */
-            else { perror ("select"); boucle_princ = 0; }
+            else {
+                perror ("select");
+                boucle_princ = 0;
+            }
 #endif
         }
-	}
+    }
 }
 
 
 void netcat_socks(char *sockshost, int socksport,
-				char *host, int port, int listen,
-				char *uname, char *passwd,
-				int ssl){
-	s_socket s;
+                  char *host, int port, int listen,
+                  char *uname, char *passwd,
+                  int ssl) {
+    s_socket s;
 
 #ifdef _WIN32
-  WSADATA wsaData;
-  int wsaInit = WSAStartup(MAKEWORD(2,2), &wsaData);
-  if (wsaInit != 0){
-      ERROR(L_NOTICE, "WSAStartup failed: %d\n", wsaInit);
-      exit(1);
-  }
+    WSADATA wsaData;
+    int wsaInit = WSAStartup(MAKEWORD(2,2), &wsaData);
+    if (wsaInit != 0) {
+        ERROR(L_NOTICE, "WSAStartup failed: %d\n", wsaInit);
+        exit(1);
+    }
 #endif
 
-	int r = new_socket_with_socks(&s, sockshost, socksport,
-		uname, passwd, host, port, listen,
-		SOCKS5_V, ssl,
-		(listen != 0) ? CMD_BIND : CMD_CONNECT);
+    int r = new_socket_with_socks(&s, sockshost, socksport,
+                                  uname, passwd, host, port, listen,
+                                  SOCKS5_V, ssl,
+                                  (listen != 0) ? CMD_BIND : CMD_CONNECT);
 
-	if ( r < 1 ){
-		ERROR(L_NOTICE, "client: connection error");
+    if ( r < 1 ) {
+        ERROR(L_NOTICE, "client: connection error");
 #ifdef _WIN32
-    WSACleanup();
+        WSACleanup();
 #endif
-		exit(1);
-	}
+        exit(1);
+    }
 
-	TRACE(L_VERBOSE, "client: established connection");
-	netcat_like(&s);
-	TRACE(L_VERBOSE, "client: close socket ...");
+    TRACE(L_VERBOSE, "client: established connection");
+    netcat_like(&s);
+    TRACE(L_VERBOSE, "client: close socket ...");
 
 #ifdef HAVE_LIBSSL
-	if(s.ssl != NULL){
-		ssl_close(s.ssl);
-	}
-	if(globalArgs.ssl == 1){
-		ssl_cleaning();
-	}
+    if(s.ssl != NULL) {
+        ssl_close(s.ssl);
+    }
+    if(globalArgs.ssl == 1) {
+        ssl_cleaning();
+    }
 #endif /* HAVE_LIBSSL */
 
 
-	CLOSE_AND_CLEAN(s.soc);
+    CLOSE_AND_CLEAN(s.soc);
 }
 
 
-void usage(char *name){
-	printf("nsocks v%s ( Netcat like with Socks5 support )\n", PACKAGE_VERSION);
-	printf("Actually close on EOF (CTRL-D)\n");
-	printf("Usage:\n");
-	printf("\t%s --socks localhost:1080 mywebserv.com 80\n", name);
-	printf("\t%s -s localhost:1080 -u y0ug -p 1234 mywebserv.com 80\n", name);
-	printf("\t%s -s localhost:1080 -l 8080\n", name);
-	printf("Options:\n");
+void usage(char *name) {
+    printf("nsocks v%s ( Netcat like with Socks5 support )\n", PACKAGE_VERSION);
+    printf("Actually close on EOF (CTRL-D)\n");
+    printf("Usage:\n");
+    printf("\t%s --socks localhost:1080 mywebserv.com 80\n", name);
+    printf("\t%s -s localhost:1080 -u y0ug -p 1234 mywebserv.com 80\n", name);
+    printf("\t%s -s localhost:1080 -l 8080\n", name);
+    printf("Options:\n");
 #ifdef HAVE_LIBSSL
-	printf("\t--cert  {certfile.crt} Certificate of dst server (enable SSL)\n");
+    printf("\t--cert  {certfile.crt} Certificate of dst server (enable SSL)\n");
 #endif
-	printf("\t--verbose (increase verbose level)\n\n");
-	printf("\t--socks {host:port}\n");
-	printf("\t--uname {uname}\n");
-	printf("\t--passwd {passwd}\n");
-	printf("\t--listen {port}\n");
-	printf("\n");
-	printf("Bug report %s\n", PACKAGE_BUGREPORT);
+    printf("\t--verbose (increase verbose level)\n\n");
+    printf("\t--socks {host:port}\n");
+    printf("\t--uname {uname}\n");
+    printf("\t--passwd {passwd}\n");
+    printf("\t--listen {port}\n");
+    printf("\n");
+    printf("Bug report %s\n", PACKAGE_BUGREPORT);
 }
 
-void parseArg(int argc, char *argv[]){
-	memset(&globalArgs, 0, sizeof(globalArgs));
+void parseArg(int argc, char *argv[]) {
+    memset(&globalArgs, 0, sizeof(globalArgs));
 
-	int c;
-	while (1){
-		static struct option long_options[] = {
-			{"help",    no_argument,       0, 'h'},
-			{"verbose", no_argument,       0, 'v'},
+    int c;
+    while (1) {
+        static struct option long_options[] = {
+            {"help",    no_argument,       0, 'h'},
+            {"verbose", no_argument,       0, 'v'},
 #ifdef HAVE_LIBSSL
-			{"cert",      required_argument, 0, 'c'},
+            {"cert",      required_argument, 0, 'c'},
 #endif
-			{"socks",   required_argument, 0, 's'},
-			{"uname",   required_argument, 0, 'u'},
-			{"passwd",  required_argument, 0, 'p'},
-			{"listen",  required_argument, 0, 'l'},
-			{0, 0, 0, 0}
-		};
+            {"socks",   required_argument, 0, 's'},
+            {"uname",   required_argument, 0, 'u'},
+            {"passwd",  required_argument, 0, 'p'},
+            {"listen",  required_argument, 0, 'l'},
+            {0, 0, 0, 0}
+        };
 
-		/* getopt_long stores the option index here. */
-		int option_index = 0;
+        /* getopt_long stores the option index here. */
+        int option_index = 0;
 
-		c = getopt_long (argc, argv, "h?vc:s:u:p:l:",
-					long_options, &option_index);
+        c = getopt_long (argc, argv, "h?vc:s:u:p:l:",
+                         long_options, &option_index);
 
-		/* Detect the end of the options. */
-		if (c == -1)
-			break;
+        /* Detect the end of the options. */
+        if (c == -1)
+            break;
 
-		char *port;
+        char *port;
 
-		switch (c)	{
-			case 0:
-				/* If this option set a flag, do nothing else now. */
-				if (long_options[option_index].flag != 0)
-					break;
-				printf ("option %s", long_options[option_index].name);
-				if (optarg)
-					printf (" with arg %s", optarg);
-				printf ("\n");
-				break;
+        switch (c)	{
+        case 0:
+            /* If this option set a flag, do nothing else now. */
+            if (long_options[option_index].flag != 0)
+                break;
+            printf ("option %s", long_options[option_index].name);
+            if (optarg)
+                printf (" with arg %s", optarg);
+            printf ("\n");
+            break;
 
-			case 'v':
-				//globalArgs.verbosity++;
-				verbosity++;
-				break;
+        case 'v':
+            //globalArgs.verbosity++;
+            verbosity++;
+            break;
 
 #ifdef HAVE_LIBSSL
-			case 'c':
-				globalArgs.ssl = 1;
-				globalArgs.certfile = optarg;
-				break;
-			case 'k':
-				globalArgs.ssl = 1;
-				break;
+        case 'c':
+            globalArgs.ssl = 1;
+            globalArgs.certfile = optarg;
+            break;
+        case 'k':
+            globalArgs.ssl = 1;
+            break;
 #endif
 
-			case 's':
+        case 's':
 
-				port = strchr(optarg, ':');
-				if ( port == NULL ){
-					usage(argv[0]);
-					exit(1);
-				}
-				*port = 0; port++;
-				globalArgs.sockshost = optarg;
-				globalArgs.socksport = atoi(port);
-				/*printf("Connect trought socks %s:%d\n",
-					globalArgs.sockshost, globalArgs.socksport);*/
-				break;
+            port = strchr(optarg, ':');
+            if ( port == NULL ) {
+                usage(argv[0]);
+                exit(1);
+            }
+            *port = 0;
+            port++;
+            globalArgs.sockshost = optarg;
+            globalArgs.socksport = atoi(port);
+            /*printf("Connect trought socks %s:%d\n",
+            	globalArgs.sockshost, globalArgs.socksport);*/
+            break;
 
-			case 'u':
-				/* printf("Username: %s\n", optarg); */
-				globalArgs.uname = optarg;
-				break;
+        case 'u':
+            /* printf("Username: %s\n", optarg); */
+            globalArgs.uname = optarg;
+            break;
 
-			case 'p':
-				/* printf("Passwd: %s\n", optarg); */
-				globalArgs.passwd = optarg;
-				break;
+        case 'p':
+            /* printf("Passwd: %s\n", optarg); */
+            globalArgs.passwd = optarg;
+            break;
 
-			case 'l':
-				/* printf("Listening on port: %d\n", atoi(optarg)); */
-				globalArgs.listen = atoi(optarg);
-				break;
+        case 'l':
+            /* printf("Listening on port: %d\n", atoi(optarg)); */
+            globalArgs.listen = atoi(optarg);
+            break;
 
-			case '?':
-				/* getopt_long already printed an error message. */
-				usage(argv[0]);
-				exit(1);
-				break;
+        case '?':
+            /* getopt_long already printed an error message. */
+            usage(argv[0]);
+            exit(1);
+            break;
 
-			case 'h':
-				usage(argv[0]);
-				exit(1);
-				break;
+        case 'h':
+            usage(argv[0]);
+            exit(1);
+            break;
 
-			default:
-				abort ();
-		}
-	}
+        default:
+            abort ();
+        }
+    }
 
-	if (argc - optind == 2 ){
-		globalArgs.host = argv[optind++];
-		globalArgs.port = atoi(argv[optind++]);
-	}else if(globalArgs.listen != 0){
+    if (argc - optind == 2 ) {
+        globalArgs.host = argv[optind++];
+        globalArgs.port = atoi(argv[optind++]);
+    } else if(globalArgs.listen != 0) {
 
-	}else{
-		usage(argv[0]);
-		exit(1);
-	}
+    } else {
+        usage(argv[0]);
+        exit(1);
+    }
 
-	if ( globalArgs.sockshost == NULL || globalArgs.socksport == 0 ){
-		usage(argv[0]);
-		exit(1);
-	}
+    if ( globalArgs.sockshost == NULL || globalArgs.socksport == 0 ) {
+        usage(argv[0]);
+        exit(1);
+    }
 
 #ifdef HAVE_LIBSSL
-	/*Initialize ssl with the CA certificate file
-	 */
-	if (globalArgs.certfile != NULL){
-		SSL_load_error_strings();  /* readable error messages */
-		SSL_library_init();        /* initialize library */
-		TRACE(L_VERBOSE, "client: init ssl ...");
-		if (globalArgs.certfile == NULL){
-			ERROR(L_NOTICE, "client: actually need CA certificate file");
-			exit(1);
-		}
-		if ( ssl_init_client(globalArgs.certfile) != 0){
-			ERROR(L_NOTICE, "client: ssl config error");
-			exit(1);
-		}
-		TRACE(L_VERBOSE, "client: ssl ok.");
-	}
+    /*Initialize ssl with the CA certificate file
+     */
+    if (globalArgs.certfile != NULL) {
+        SSL_load_error_strings();  /* readable error messages */
+        SSL_library_init();        /* initialize library */
+        TRACE(L_VERBOSE, "client: init ssl ...");
+        if (globalArgs.certfile == NULL) {
+            ERROR(L_NOTICE, "client: actually need CA certificate file");
+            exit(1);
+        }
+        if ( ssl_init_client(globalArgs.certfile) != 0) {
+            ERROR(L_NOTICE, "client: ssl config error");
+            exit(1);
+        }
+        TRACE(L_VERBOSE, "client: ssl ok.");
+    }
 #endif
 }
 
-int main (int argc, char *argv[]){
-	parseArg(argc, argv);
+int main (int argc, char *argv[]) {
+    parseArg(argc, argv);
 
-	/*if ( globalArgs.listen != 0 )
-		netcat_socks_bind(globalArgs.sockshost, globalArgs.socksport,
-					"0.0.0.0", globalArgs.listen,
-					globalArgs.uname, globalArgs.passwd,
+    /*if ( globalArgs.listen != 0 )
+    	netcat_socks_bind(globalArgs.sockshost, globalArgs.socksport,
+    				"0.0.0.0", globalArgs.listen,
+    				globalArgs.uname, globalArgs.passwd,
+    #ifdef HAVE_LIBSSL
+    				globalArgs.ssl);
+    #else
+    				0);
+    #endif
+    else*/
+    netcat_socks(globalArgs.sockshost, globalArgs.socksport,
+                 globalArgs.host, globalArgs.port, globalArgs.listen,
+                 globalArgs.uname, globalArgs.passwd,
 #ifdef HAVE_LIBSSL
-					globalArgs.ssl);
+                 globalArgs.ssl);
 #else
-					0);
-#endif
-	else*/
-		netcat_socks(globalArgs.sockshost, globalArgs.socksport,
-					globalArgs.host, globalArgs.port, globalArgs.listen,
-					globalArgs.uname, globalArgs.passwd,
-#ifdef HAVE_LIBSSL
-					globalArgs.ssl);
-#else
-					0);
+                 0);
 #endif
 
-	exit(0);
+    exit(0);
 }

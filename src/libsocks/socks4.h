@@ -32,10 +32,10 @@
 #include "client.h"
 
 int test_request4(s_socks *s, s_socket *stream, s_socket *bind,
-		s_socks_conf *c, s_buffer *buf);
+                  s_socks_conf *c, s_buffer *buf);
 
 void build_request_ack4(s_socks *s, s_socks_conf *c,
-		s_socket *stream, s_socket *bind, s_buffer *buf);
+                        s_socket *stream, s_socket *bind, s_buffer *buf);
 
 #endif /* SOCKS5_SERVER__H */
 

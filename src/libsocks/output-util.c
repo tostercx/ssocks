@@ -1,19 +1,19 @@
 /*
  *      output-util.c
- *      
+ *
  *      Created on: 2011-04-03
  *      Author:     Hugo Caron
  *      Email:      <h.caron@codsec.com>
- * 
+ *
  * Copyright (C) 2011 by Hugo Caron
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
@@ -35,33 +35,33 @@
 
 int verbosity = 0;
 
-void ERROR(int level, char *template, ...){
-	va_list ap;
-	va_start(ap, template);
-	if ( level <= verbosity ){
-		vfprintf(stderr, template, ap);
-		printf("\n");
-	}
-	va_end(ap);	
+void ERROR(int level, char *template, ...) {
+    va_list ap;
+    va_start(ap, template);
+    if ( level <= verbosity ) {
+        vfprintf(stderr, template, ap);
+        printf("\n");
+    }
+    va_end(ap);
 }
 
-void TRACE(int level, char *template, ...){
-	va_list ap;
-	va_start(ap, template);
-	if ( level <= verbosity ){
-		vfprintf(stdout, template, ap);
-		printf("\n");
-	}
-	va_end(ap);
+void TRACE(int level, char *template, ...) {
+    va_list ap;
+    va_start(ap, template);
+    if ( level <= verbosity ) {
+        vfprintf(stdout, template, ap);
+        printf("\n");
+    }
+    va_end(ap);
 }
 
-void DUMP(const char *s, size_t n){
-	unsigned int i;
+void DUMP(const char *s, size_t n) {
+    unsigned int i;
 
-	for (i=0; i < n; i++)
-		printf ("0x%x ", s[i]);
-		
-	printf ("\n");
+    for (i=0; i < n; i++)
+        printf ("0x%x ", s[i]);
+
+    printf ("\n");
 }
 
 void trim(char * s) {

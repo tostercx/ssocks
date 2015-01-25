@@ -1,19 +1,19 @@
 /*
  *      output-util.h
- *      
+ *
  *      Created on: 2011-04-03
  *      Author:     Hugo Caron
  *      Email:      <h.caron@codsec.com>
- * 
+ *
  * Copyright (C) 2011 by Hugo Caron
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
@@ -36,9 +36,9 @@ extern int verbosity;
 
 /* Verbosity level */
 enum {
-	L_NOTICE,
-	L_VERBOSE,
-	L_DEBUG
+    L_NOTICE,
+    L_VERBOSE,
+    L_DEBUG
 };
 
 void TRACE(int level, char *template, ...);
