@@ -1,28 +1,50 @@
 # usage: nmake -f Makefile.nmake
 
-CFLAGS = /nologo /DSTATIC_GETOPT /c /Isrc
+
 LD = link
-EXE = bin\nsocks.exe bin\ssocks.exe bin\rssocks.exe bin\rcsocks.exe
-#bin\ssocksd.exe
-OBJ = bin\auth-util.obj bin\win_getopt.obj bin\libsocks\bor-util.obj bin\libsocks\net-util.obj bin\libsocks\output-util.obj bin\libsocks\socks5-client.obj bin\libsocks\socks5-server.obj bin\libsocks\socks-common.obj bin\libsocks\log-util.obj bin\libsocks\client.obj bin\libsocks\socks4.obj
-#bin\configd-util.obj
+CFLAGS = /nologo /DSTATIC_GETOPT /c /Isrc
 
-!IF [@copy /y config.h.win32 src\config.h]
-!ENDIF
 
-all: $(EXE)
+EXE = \
+  bin\nsocks.exe \
+  bin\ssocks.exe \
+  bin\rssocks.exe \
+  bin\rcsocks.exe \
+#  bin\ssocksd.exe
+
+OBJ = \
+  bin\auth-util.obj \
+  bin\win_getopt.obj \
+  bin\libsocks\bor-util.obj \
+  bin\libsocks\net-util.obj \
+  bin\libsocks\output-util.obj \
+  bin\libsocks\socks5-client.obj \
+  bin\libsocks\socks5-server.obj \
+  bin\libsocks\socks-common.obj \
+  bin\libsocks\log-util.obj \
+  bin\libsocks\client.obj \
+  bin\libsocks\socks4.obj \
+#  bin\configd-util.obj
+
+
+
+all: prep $(EXE)
+
+prep:
+  @if not exist bin mkdir bin
+  @if not exist bin\libsocks mkdir bin\libsocks
+  @copy /y config.h.win32 src\config.h
+
+rebuild: clean all
 
 clean:
   @if exist bin rd /s /q bin
   @if exist src\config.h del src\config.h
 
 {src\libsocks}.c{bin\libsocks}.obj:
-  @if not exist bin mkdir bin
-  @if not exist bin\libsocks mkdir bin\libsocks
   @$(CC) $(CFLAGS) /Fobin\libsocks\ $<
 
 {src}.c{bin}.obj:
-  @if not exist bin mkdir bin
   @$(CC) $(CFLAGS) /Fobin\ $<
 
 $(EXE): $(OBJ)
