@@ -909,8 +909,7 @@ int dispatch_server(s_client *client, fd_set *set_read, fd_set *set_write)
         }
     }
 
-    // ?? no error handling
-    return 0;
+    return k;
 }
 
 /* Prepare set_read and set_write for a select  (ssocksd)
