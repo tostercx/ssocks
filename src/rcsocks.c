@@ -45,6 +45,11 @@
 
 #define PORT 1080
 
+// global to prevent messing with the stack
+// see http://stackoverflow.com/questions/1847789/segmentation-fault-on-large-array-sizes
+s_socket socks_pool[MAXCLI];
+s_client tc[MAXCLI];
+
 struct globalArgs_t {
     char *host;				// -h option
     unsigned int port;		// -p option
@@ -237,9 +242,6 @@ void server_relay(int port, int listen, int ssl) {
     }
 #endif
 
-    s_socket socks_pool[MAXCLI];
-    s_client tc[MAXCLI];
-
     /* Init client tab */
     for (nc = 0; nc < MAXCLI; nc++)
         init_socket(&socks_pool[nc]);
@@ -429,6 +431,7 @@ void parse_arg(int argc, char *argv[]) {
 
 int main (int argc, char *argv[]) {
     parse_arg(argc, argv);
+    printf("%d\n", sizeof(s_client));
     server_relay(globalArgs.port, globalArgs.listen,
 #ifdef HAVE_LIBSSL
                  globalArgs.ssl
