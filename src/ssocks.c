@@ -45,6 +45,10 @@
 
 #define PORT 1080
 
+// global to prevent messing with the stack
+// see http://stackoverflow.com/questions/1847789/segmentation-fault-on-large-array-sizes
+s_client tc[MAXCLI];
+
 struct globalArgs_t {
     char *host;				// -h option
     unsigned int port;		// -p option
@@ -103,11 +107,18 @@ void server_relay(char *sockshost, int socksport, int port,
     fd_set set_read;
     fd_set set_write;
 
-    s_client tc[MAXCLI];
-
     s_socks_conf conf;
     s_socks_client_config config_cli;
     s_socks_server_config config_srv;
+
+#ifdef _WIN32
+    WSADATA wsaData;
+    int wsaInit = WSAStartup(MAKEWORD(2,2), &wsaData);
+    if (wsaInit != 0) {
+        ERROR(L_NOTICE, "WSAStartup failed: %d\n", wsaInit);
+        exit(1);
+    }
+#endif
 
     conf.config.cli = &config_cli;
     conf.config.srv = &config_srv;
@@ -195,6 +206,9 @@ fin_serveur:
 #ifdef HAVE_LIBSSL
     if (ssl == 1)
         ssl_cleaning();
+#endif
+#ifdef _WIN32
+    WSACleanup();
 #endif
 }
 
