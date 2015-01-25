@@ -27,25 +27,25 @@ clean:
   @if exist src\config.h del src\config.h
 
 
-bin\auth-util.obj: src\auth-util.c src\libsocks/output-util.h
+bin\auth-util.obj: src\auth-util.c src\libsocks\output-util.h
   @$(CC) $(CFLAGS) src\auth-util.c
 
-#bin\configd-util.obj: src\configd-util.c src\configd-util.h src\config.h src\libsocks/output-util.h
+#bin\configd-util.obj: src\configd-util.c src\configd-util.h src\config.h src\libsocks\output-util.h
 #  @$(CC) $(CFLAGS) src\configd-util.c
 
-bin\nsocks.obj: src\nsocks.c src\libsocks/bor-util.h src\libsocks/net-util.h src\libsocks/output-util.h src\libsocks/socks-common.h src\libsocks/socks5-client.h src\win_getopt.h src\config.h
+bin\nsocks.obj: src\nsocks.c src\libsocks\bor-util.h src\libsocks\net-util.h src\libsocks\output-util.h src\libsocks\socks-common.h src\libsocks\socks5-client.h src\win_getopt.h src\config.h
   @$(CC) $(CFLAGS) src\nsocks.c
 
-bin\rcsocks.obj: src\rcsocks.c src\libsocks/bor-util.h src\libsocks/net-util.h src\libsocks/output-util.h src\libsocks/socks-common.h src\libsocks/socks5-client.h src\libsocks/socks5-server.h src\config.h src\win_getopt.h
+bin\rcsocks.obj: src\rcsocks.c src\libsocks\bor-util.h src\libsocks\net-util.h src\libsocks\output-util.h src\libsocks\socks-common.h src\libsocks\socks5-client.h src\libsocks\socks5-server.h src\config.h src\win_getopt.h
   @$(CC) $(CFLAGS) src\rcsocks.c
 
-bin\rssocks.obj: src\rssocks.c src\libsocks/bor-util.h src\libsocks/net-util.h src\libsocks/output-util.h src\libsocks/socks-common.h src\libsocks/socks5-client.h src\libsocks/socks5-server.h src\config.h src\win_getopt.h
+bin\rssocks.obj: src\rssocks.c src\libsocks\bor-util.h src\libsocks\net-util.h src\libsocks\output-util.h src\libsocks\socks-common.h src\libsocks\socks5-client.h src\libsocks\socks5-server.h src\config.h src\win_getopt.h
   @$(CC) $(CFLAGS) src\rssocks.c
 
-bin\ssocks.obj: src\ssocks.c src\libsocks/bor-util.h src\libsocks/net-util.h src\libsocks/output-util.h src\libsocks/socks-common.h src\libsocks/socks5-client.h src\libsocks/socks5-server.h src\config.h src\win_getopt.h
+bin\ssocks.obj: src\ssocks.c src\libsocks\bor-util.h src\libsocks\net-util.h src\libsocks\output-util.h src\libsocks\socks-common.h src\libsocks\socks5-client.h src\libsocks\socks5-server.h src\config.h src\win_getopt.h
   @$(CC) $(CFLAGS) src\ssocks.c
 
-bin\ssocksd.obj: src\ssocksd.c src\libsocks/net-util.h src\libsocks/bor-util.h src\libsocks/output-util.h src\libsocks/client.h src\libsocks/socks-common.h src\libsocks/socks5-server.h src\libsocks/log-util.h src\auth-util.h src\configd-util.h src\config.h src\auth-util.h src\config.h
+bin\ssocksd.obj: src\ssocksd.c src\libsocks\net-util.h src\libsocks\bor-util.h src\libsocks\output-util.h src\libsocks\client.h src\libsocks\socks-common.h src\libsocks\socks5-server.h src\libsocks\log-util.h src\auth-util.h src\configd-util.h src\config.h src\auth-util.h src\config.h
   @$(CC) $(CFLAGS) src\ssocksd.c
 
 bin\win_getopt.obj: src\win_getopt.c src\win_getopt.h
