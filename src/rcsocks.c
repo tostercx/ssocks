@@ -431,7 +431,6 @@ void parse_arg(int argc, char *argv[]) {
 
 int main (int argc, char *argv[]) {
     parse_arg(argc, argv);
-    printf("%d\n", sizeof(s_client));
     server_relay(globalArgs.port, globalArgs.listen,
 #ifdef HAVE_LIBSSL
                  globalArgs.ssl
