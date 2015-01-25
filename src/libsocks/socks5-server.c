@@ -496,7 +496,11 @@ void build_request_ack(s_socks *s, s_socks_conf *c,
 {
 
     Socks5ReqACK res;
+#ifdef _WIN32
+    char k;
+#else
     int k;
+#endif
     socklen_t socklen = sizeof(int);
     res.ver = s->version;
     res.rsv = 0;
@@ -632,7 +636,11 @@ int build_request_accept_bind(s_socks *s, s_socks_conf *c,
 int dispatch_server_write(s_socket *soc, s_socket *soc_stream, s_socks *socks,
                           s_buffer *buf, s_socks_conf *conf)
 {
+#ifdef _WIN32
+    char k = 0;
+#else
     int k = 0;
+#endif
     socklen_t socklen = sizeof(int);
     if ( soc->con == 0 ) {
         if ( getsockopt(soc->soc, SOL_SOCKET, SO_ERROR, &k, &socklen) < 0) {
@@ -655,7 +663,7 @@ int dispatch_server_write(s_socket *soc, s_socket *soc_stream, s_socks *socks,
         TRACE(L_VERBOSE, "server [%d]: server connection on %s OK",socks->id,
               bor_adrtoa_in(&soc->adrS));
         soc->con = 1;
-        return;
+        return 0;
     }
     switch(socks->state) {
     case S_W_VER_ACK:
@@ -900,6 +908,9 @@ int dispatch_server(s_client *client, fd_set *set_read, fd_set *set_write)
             client->socks.state = S_W_REQ_ACK;
         }
     }
+
+    // ?? no error handling
+    return 0;
 }
 
 /* Prepare set_read and set_write for a select  (ssocksd)
@@ -1017,7 +1028,7 @@ int init_select_server_reverse (s_client *tc, int *maxfd,
     while(cpt < ncon) {
         /* Open connection to the socks client */
         for (nc = 0; nc < MAXCLI; nc++) if ( tc[nc].soc.soc == -1 ) break;
-        if (nc >= MAXCLI) return;
+        if (nc >= MAXCLI) return -1;
         /* Remove nonblockant for ssl */
         tc[nc].soc.soc = new_client_socket(tc[nc].conf->config.cli->sockshost,
                                            tc[nc].conf->config.cli->socksport, &tc[nc].soc.adrC,

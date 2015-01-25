@@ -92,7 +92,11 @@ void build_request_ack4(s_socks *s, s_socks_conf *c,
 {
 
     Socks4ReqAck res;
+#ifdef _WIN32
+    char k;
+#else
     int k;
+#endif
     res.ver = 0x00;
     socklen_t socklen = sizeof(int);
 
