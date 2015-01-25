@@ -108,6 +108,15 @@ void reverse_server(char *sockshost, int socksport,
     s_socks_client_config config_cli;
     s_socks_server_config config_srv;
 
+#ifdef _WIN32
+    WSADATA wsaData;
+    int wsaInit = WSAStartup(MAKEWORD(2,2), &wsaData);
+    if (wsaInit != 0) {
+        ERROR(L_NOTICE, "WSAStartup failed: %d\n", wsaInit);
+        exit(1);
+    }
+#endif
+
     conf.config.cli = &config_cli;
     conf.config.srv = &config_srv;
 
@@ -187,6 +196,10 @@ fin_serveur:
     printf ("Server: closing sockets ...\n");
     if (soc_ec != -1) CLOSE_SOCKET(soc_ec);
     for (nc = 0; nc < MAXCLI; nc++) disconnection(&tc[nc]);
+
+#ifdef _WIN32
+    WSACleanup();
+#endif
 }
 
 
