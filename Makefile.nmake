@@ -18,11 +18,13 @@ all: prep bin\nsocks.exe bin\rcsocks.exe bin\rssocks.exe bin\ssocks.exe
 
 prep:
   @if not exist bin mkdir bin
+  @copy /y config.h.win32 src\config.h
 
 rebuild: clean all
 
 clean:
   @if exist bin rd /s /q bin
+  @if exist src\config.h del src\config.h
 
 
 bin\auth-util.obj: src\auth-util.c src\libsocks/output-util.h
