@@ -43,13 +43,13 @@ int new_socket_tcpip(int port, struct sockaddr_in *addr){
 	
 	TRACE(L_DEBUG, "socket: attachment to a local socket port ...");
 	if ( bor_bind_in(soc, addr) < 0 ) {
-		close(soc);
+		CLOSE_SOCKET(soc);
 		return -1;
 	}
 	
 	/* Recovering the client port */
 	if ( bor_getsockname_in(soc, addr) < 0 ){
-		close(soc);
+		CLOSE_SOCKET(soc);
 		return -1;
 	}
 	
@@ -125,7 +125,7 @@ int new_listen_socket (const char *bindAddr, int nport, int backlog, struct sock
 		    break;
 	    }
 
-	    close(soc_ec);
+	    CLOSE_SOCKET(soc_ec);
     }
 
     freeaddrinfo(res);
@@ -158,7 +158,7 @@ int new_client_socket_no_ip(char ip[4], uint16_t nport, struct sockaddr_in *addr
 	}
 	set_non_blocking(soc);
 	if ( build_addr(ip, nport, addrS) < 0 ){
-		close(soc);
+		CLOSE_SOCKET(soc);
 		return -1;
 	}
 
@@ -178,7 +178,7 @@ int new_client_socket_no(char *nameS, uint16_t nport, struct sockaddr_in *addrC,
 	}
 	set_non_blocking(soc);
 	if ( build_addr_server(nameS, nport, addrS) < 0 ){
-		close(soc);
+		CLOSE_SOCKET(soc);
 		return -1;
 	}
 
@@ -200,23 +200,23 @@ int new_client_socket(char *nameS, uint16_t nport,
 	}
 	
 	if ( build_addr_server(nameS, nport, addrS) < 0 ){
-		close(soc);
+		CLOSE_SOCKET(soc);
 		return -1;
 	}
 	
 	TRACE(L_VERBOSE, "client: server connection on %s:%d ...", 
 		nameS, ntohs(addrS->sin_port));
 	if ( bor_connect_in(soc, addrS) < 0 ){
-		close(soc);
+		CLOSE_SOCKET(soc);
 		return -1;
 	}
 
 	/* Recovering the client address and port after the connection*/
 	if ( bor_getsockname_in(soc, addrC) < 0 ){
-		close(soc);
+		CLOSE_SOCKET(soc);
 		return -1;
 	}
-
+  
 	//TRACE(L_VERBOSE, "client: established connection ...");
 	return soc;
 }

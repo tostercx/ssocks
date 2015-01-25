@@ -29,17 +29,10 @@
 #define SOCKS_COMMON__H
 
 
-#ifdef _WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#else
-#include <netinet/ip.h> /* socket sockaddr_in */
-#include <unistd.h>		/* read and write */
-#endif
-
 #include <config.h>
 #include <stdint.h>
 
+#include "unisocket.h"
 #include "output-util.h"
 
 

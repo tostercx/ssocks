@@ -755,7 +755,7 @@ int new_socket_with_socks(s_socket *s,
 
 		/* Adds the socket in read fds */
 		init_select_client(&c.soc, &c.socks, &c.buf, &maxfd, &set_read, &set_write);
-
+    
 		res = select (maxfd+1, &set_read, &set_write, NULL, NULL);
         if (res > 0) {
             dispatch_client(&c, &set_read, &set_write);

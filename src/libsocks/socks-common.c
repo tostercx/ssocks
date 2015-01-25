@@ -26,7 +26,7 @@ int write_socks(s_socket *s, s_buffer *buf){
 		return buf_empty(buf);
 	}
 #endif
-	k = write(s->soc, buf->data + buf->a, buf_size(buf));
+	k = send(s->soc, buf->data + buf->a, buf_size(buf), 0);
 	if (k < 0){ perror("write socks"); return -1; }
 	buf->a += k;
 	return buf_empty(buf);
@@ -47,7 +47,7 @@ int read_socks(s_socket *s, s_buffer *buf, size_t minsize){
 		return (buf->b >= minsize);
 	}
 #endif
-	k = read(s->soc, buf->data + buf->b, buf_free(buf));
+	k = recv(s->soc, buf->data + buf->b, buf_free(buf), 0);
 	if (k < 0){ perror("read socks"); return -2; }
 	if (k == 0){ return -1; }
 	buf->b += k;
@@ -103,7 +103,7 @@ void init_socks(s_socks *s, int id, int mode){
 
 
 void close_socket(s_socket *s){
-	if ( s->soc != -1 ) close(s->soc);
+	if ( s->soc != -1 ) CLOSE_SOCKET(s->soc);
 	s->soc = -1;
 
 #ifdef HAVE_LIBSSL

@@ -98,7 +98,7 @@ void netcat_like(s_socket *s){
 			/* Read on stdin ? */
 			if (FD_ISSET (0, &set_read)){
 				k = read(0, buf+buf_b, sizeof(buf)-buf_b-1);
-				if ( k < 0 ) { perror("read stdin"); close(s->soc); exit(1); }
+				if ( k < 0 ) { perror("read stdin"); CLOSE_AND_CLEAN(s->soc); exit(1); }
 				if ( k == 0 ) { ERROR(L_DEBUG, "client: read 0 bytes on stdin"); boucle_princ = 0; }
 				//printf("client: read %d bytes in stdin\n", k);
 				buf_b += k;
@@ -109,14 +109,14 @@ void netcat_like(s_socket *s){
 #ifdef HAVE_LIBSSL
 				if ( s->ssl != NULL ){
 					k = SSL_read(s->ssl, buf+buf_b, sizeof(buf)-buf_b-1);
-					if (k < 0){ perror("read socket"); close(s->soc); exit(1); }
+					if (k < 0){ perror("read socket"); CLOSE_AND_CLEAN(s->soc); exit(1); }
 					if (k == 0){ ERROR(L_DEBUG, "client: read 0 bytes!"); boucle_princ = 0; }
 					k = write(1, buf, k);
 					continue;
 				}
 #endif
-				k = read(s->soc, buf+buf_b, sizeof(buf)-buf_b-1);
-				if ( k < 0 ) { perror("read socket"); close(s->soc); exit(1); }
+				k = recv(s->soc, buf+buf_b, sizeof(buf)-buf_b-1, 0);
+				if ( k < 0 ) { perror("read socket"); CLOSE_AND_CLEAN(s->soc); exit(1); }
 				if ( k == 0 ) { ERROR(L_DEBUG, "client: read 0 bytes!"); boucle_princ = 0; }
 				//printf("client: read %d bytes in socket\n", k);
 				k = write(1, buf, k);
@@ -163,6 +163,14 @@ void netcat_socks(char *sockshost, int socksport,
 				int ssl){
 	s_socket s;
 
+#ifdef _WIN32
+  WSADATA wsaData;
+  int wsaInit = WSAStartup(MAKEWORD(2,2), &wsaData);
+  if (wsaInit != 0){
+      ERROR(L_NOTICE, "WSAStartup failed: %d\n", wsaInit);
+      exit(1);
+  }
+#endif
 
 	int r = new_socket_with_socks(&s, sockshost, socksport,
 		uname, passwd, host, port, listen,
@@ -171,6 +179,9 @@ void netcat_socks(char *sockshost, int socksport,
 
 	if ( r < 1 ){
 		ERROR(L_NOTICE, "client: connection error");
+#ifdef _WIN32
+    WSACleanup();
+#endif
 		exit(1);
 	}
 
@@ -186,9 +197,9 @@ void netcat_socks(char *sockshost, int socksport,
 		ssl_cleaning();
 	}
 #endif /* HAVE_LIBSSL */
-	close(s.soc);
 
 
+	CLOSE_AND_CLEAN(s.soc);
 }
 
 

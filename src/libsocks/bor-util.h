@@ -19,20 +19,8 @@
 #include <time.h>       /* time, gettimeofday */
 #include <errno.h>      /* errno */
 
-#ifdef _WIN32
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#define sockaddr_un sockaddr_in
-#else
-#include <unistd.h>     /* close */
-#include <sys/wait.h>   /* wait */
-#include <sys/socket.h> /* socket, bind, sendto, recvfrom, getsockname */
-#include <sys/un.h>     /* socket domaine AF_UNIX */
-#include <netinet/ip.h> /* socket domaine AF_INET */
-#include <arpa/inet.h>  /* inet_ntoa */
-#include <netdb.h>      /* gethostbyname */
-#include <sys/time.h>   /* gettimeofday */
-#endif
+#include "unisocket.h"
+
 
 /* Compatibilite avec C++ */
 #if defined(c_plusplus) && !defined(__cplusplus)
