@@ -137,6 +137,10 @@ int writePID(char *filename) {
 
 /* Same function in unistd.h daemon */
 void background() {
+#if _WIN32
+    // do nothing for now...
+    // FreeConsole ?
+#else
     pid_t pid, sid;
 
 
@@ -170,6 +174,7 @@ void background() {
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
+#endif
 }
 
 /* Fast hack for secure strcpy, to lazy to check if is trully secure */

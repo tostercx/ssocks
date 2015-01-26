@@ -30,8 +30,8 @@ clean:
 bin\auth-util.obj: src\auth-util.c src\libsocks\output-util.h
   @$(CC) $(CFLAGS) src\auth-util.c
 
-#bin\configd-util.obj: src\configd-util.c src\configd-util.h src\config.h src\libsocks\output-util.h
-#  @$(CC) $(CFLAGS) src\configd-util.c
+bin\configd-util.obj: src\configd-util.c src\configd-util.h src\config.h src\libsocks\output-util.h
+  @$(CC) $(CFLAGS) src\configd-util.c
 
 bin\nsocks.obj: src\nsocks.c src\libsocks\bor-util.h src\libsocks\net-util.h src\libsocks\output-util.h src\libsocks\socks-common.h src\libsocks\socks5-client.h src\win_getopt.h src\config.h
   @$(CC) $(CFLAGS) src\nsocks.c
