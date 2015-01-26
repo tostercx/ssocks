@@ -52,6 +52,10 @@
 #define DEFAULT_PORT 1080
 #define PID_FILE "/var/run/ssocksd.pid"
 
+// global to prevent messing with the stack
+// see http://stackoverflow.com/questions/1847789/segmentation-fault-on-large-array-sizes
+s_client tc[MAXCLI];
+
 int boucle_princ = 1;
 void capte_fin (int sig) {
     printf ("serveur: signal %d caught\n", sig);
@@ -265,11 +269,19 @@ void capte_sigpipe() {
 
 void server(const char *bindAddr, int port, int ssl) {
     int soc_ec = -1, maxfd, res, nc;
-    s_client tc[MAXCLI];
     fd_set set_read;
     fd_set set_write;
     struct sockaddr_in addrS;
     char methods[2];
+
+#ifdef _WIN32
+    WSADATA wsaData;
+    int wsaInit = WSAStartup(MAKEWORD(2,2), &wsaData);
+    if (wsaInit != 0) {
+        ERROR(L_NOTICE, "WSAStartup failed: %d\n", wsaInit);
+        exit(1);
+    }
+#endif
 
     s_socks_conf conf;
     s_socks_server_config config;
@@ -361,6 +373,10 @@ fin_serveur:
     for (nc = 0; nc < MAXCLI; nc++) disconnection(&tc[nc]);
     if (soc_ec != -1) CLOSE_SOCKET(soc_ec);
     if ( globalArgsServer.daemon == 1 )	removePID(PID_FILE);
+
+#ifdef _WIN32
+        WSACleanup();
+#endif
 }
 
 int main (int argc, char *argv[]) {
