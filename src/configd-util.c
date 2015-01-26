@@ -33,7 +33,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifndef _WIN32
+#ifdef _WIN32
+#define strcasecmp _stricmp
+#else
 #include <strings.h>
 /* Daemon function */
 #include <unistd.h>

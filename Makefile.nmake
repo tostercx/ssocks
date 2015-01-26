@@ -13,8 +13,7 @@ LDFLAGS = /nologo ws2_32.lib
 CFLAGS = /nologo /c /Isrc\ /Fobin\ /DSTATIC_GETOPT
 
 
-all: prep bin\nsocks.exe bin\rcsocks.exe bin\rssocks.exe bin\ssocks.exe
-#bin\ssocksd.exe
+all: prep bin\nsocks.exe bin\rcsocks.exe bin\rssocks.exe bin\ssocks.exe bin\ssocksd.exe
 
 prep:
   @if not exist bin mkdir bin
@@ -95,6 +94,6 @@ bin\rssocks.exe: bin\rssocks.obj bin\auth-util.obj bin\win_getopt.obj bin\bor-ut
 bin\ssocks.exe: bin\ssocks.obj bin\auth-util.obj bin\win_getopt.obj bin\bor-util.obj bin\client.obj bin\log-util.obj bin\net-util.obj bin\output-util.obj bin\socks-common.obj bin\socks4.obj bin\socks5-client.obj bin\socks5-server.obj bin\ssl-util.obj
   @$(LD) /out:$@ $(LDFLAGS) $**
 
-#bin\ssocksd.exe: bin\ssocksd.obj bin\auth-util.obj bin\configd-util.obj bin\win_getopt.obj bin\bor-util.obj bin\client.obj bin\log-util.obj bin\net-util.obj bin\output-util.obj bin\socks-common.obj bin\socks4.obj bin\socks5-client.obj bin\socks5-server.obj bin\ssl-util.obj
-#  @$(LD) /out:$@ $(LDFLAGS) $**
+bin\ssocksd.exe: bin\ssocksd.obj bin\auth-util.obj bin\configd-util.obj bin\win_getopt.obj bin\bor-util.obj bin\client.obj bin\log-util.obj bin\net-util.obj bin\output-util.obj bin\socks-common.obj bin\socks4.obj bin\socks5-client.obj bin\socks5-server.obj bin\ssl-util.obj
+  @$(LD) /out:$@ $(LDFLAGS) $**
 

@@ -40,8 +40,13 @@
 #include "configd-util.h"
 #include "auth-util.h"
 
+#ifdef _WIN32
+#include "win_getopt.h"
+#else
 #include <getopt.h>
 #include <unistd.h>
+#endif
+
 #include <config.h>
 
 #define DEFAULT_PORT 1080
@@ -301,6 +306,7 @@ void server(const char *bindAddr, int port, int ssl) {
     if (soc_ec < 0) goto fin_serveur;
 
 
+#ifndef _WIN32
     if ( globalArgsServer.daemon == 1 ) {
         TRACE(L_NOTICE, "server: mode daemon ...");
         if ( daemon(0, 0) != 0 ) {
@@ -318,6 +324,7 @@ void server(const char *bindAddr, int port, int ssl) {
     /* TODO: Find a better way to exit the select and recall the init_select
      * SIGUSR1 is send by a thread to unblock the select */
     bor_signal (SIGUSR1, capte_usr1, SA_RESTART);
+#endif
 
     while (boucle_princ) {
         init_select_server (soc_ec, tc, &maxfd, &set_read, &set_write);
