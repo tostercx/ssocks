@@ -60,7 +60,11 @@ int read_socks(s_socket *s, s_buffer *buf, size_t minsize) {
 #endif
     k = recv(s->soc, buf->data + buf->b, buf_free(buf), 0);
     if (k < 0) {
+#ifdef _WIN32
+        ERROR(L_NOTICE, "read socks failed with %d", WSAGetLastError());
+#else
         perror("read socks");
+#endif
         return -2;
     }
     if (k == 0) {
