@@ -1,0 +1,3 @@
+configure linguist-vendored
+aclocal.m4 linguist-vendored
+ltmain.sh linguist-vendored
