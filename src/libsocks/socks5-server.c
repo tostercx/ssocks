@@ -496,11 +496,8 @@ void build_request_ack(s_socks *s, s_socks_conf *c,
 {
 
     Socks5ReqACK res;
-#ifdef _WIN32
-    char k;
-#else
     int k;
-#endif
+
     socklen_t socklen = sizeof(int);
     res.ver = s->version;
     res.rsv = 0;
@@ -636,11 +633,8 @@ int build_request_accept_bind(s_socks *s, s_socks_conf *c,
 int dispatch_server_write(s_socket *soc, s_socket *soc_stream, s_socks *socks,
                           s_buffer *buf, s_socks_conf *conf)
 {
-#ifdef _WIN32
-    char k = 0;
-#else
     int k = 0;
-#endif
+
     socklen_t socklen = sizeof(int);
     if ( soc->con == 0 ) {
         if ( getsockopt(soc->soc, SOL_SOCKET, SO_ERROR, &k, &socklen) < 0) {
