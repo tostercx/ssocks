@@ -1,7 +1,7 @@
 Status on windows:
 
 Porting is under development. If something works it's a miracle.
-So far all tools except ssocksd have "worked" at one point or another.
+So far all tools have "worked" at one point or another.
 Daemon / background options are disabled on windows for now.
 
 ------------------------------------------------------------------------
