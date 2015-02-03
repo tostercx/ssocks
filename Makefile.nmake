@@ -22,7 +22,7 @@ prep:
 rebuild: clean all
 
 clean:
-  @if exist bin rd /s /q bin
+  @if exist bin del /q bin\*
   @if exist src\config.h del src\config.h
 
 
