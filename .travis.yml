@@ -10,7 +10,7 @@ script:
   
   - cd src
   - tstr=$(< /dev/urandom tr -dc a-z | head -c6)
-  - echo "Test string: $tstr"
+  - 'echo "Test string: $tstr"'
   
   - 'echo -ne "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\n$tstr" | nc -l 8080 &'
   - ./ssocksd -p 8081 -d
