@@ -37,3 +37,15 @@ script:
       echo Expected $tstr, got $ret;
       exit 1;
     fi
+  
+  # test r[sc]socks (nc -> rss -> rcs -> curl)
+  - tstr=$(< /dev/urandom tr -dc a-z | head -c6)
+  - 'echo -ne "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\n$tstr" | nc -l 8080 &'
+  - ./rcsocks -l 8083 -p 8084 -b
+  - ./rssocks -s 127.0.0.1:8083 -b
+  - ret=$(curl -x socks5://127.0.0.1:8084 127.0.0.1:8080)
+  - if [ "$ret" != "$tstr" ];
+    then
+      echo Expected $tstr, got $ret;
+      exit 1;
+    fi
