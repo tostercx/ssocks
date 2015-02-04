@@ -11,4 +11,8 @@ script:
   - ./ssocksd -p 8080 -d
   - echo -ne "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\n$tstr" | nc -l 8081 &
   - ret=$(curl -x socks5://127.0.0.1:8080 127.0.0.1:8081)
-  - [[ $ret = $tstr ]] || {echo Expected $tstr, got $ret; exit 1}
+  - if [ "$ret" != "$tstr" ];
+    then
+      echo Expected $tstr, got $ret;
+      exit 1;
+    fi
