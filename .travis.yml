@@ -11,9 +11,9 @@ script:
   - cd src
   - tstr=$(< /dev/urandom tr -dc a-z | head -c6)
   
-  - echo Testing ssocksd ($tstr)
+  - echo "Testing ssocksd ($tstr)"
   - ./ssocksd -p 8080 -d
-  - echo -ne "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\n$tstr" | nc -l 8081 &
+  - 'echo -ne "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\n$tstr" | nc -l 8081 &'
   - ret=$(curl -x socks5://127.0.0.1:8080 127.0.0.1:8081)
   - if [ "$ret" != "$tstr" ];
     then
