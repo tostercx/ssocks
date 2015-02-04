@@ -12,6 +12,7 @@ script:
   - tstr=$(< /dev/urandom tr -dc a-z | head -c6)
   - 'echo "Test string: $tstr"'
   
+  # test ssocksd (nc -> ssd -> curl)
   - 'echo -ne "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\n$tstr" | nc -l 8080 &'
   - ./ssocksd -p 8081 -d
   - ret=$(curl -x socks5://127.0.0.1:8081 127.0.0.1:8080)
@@ -21,9 +22,19 @@ script:
       exit 1;
     fi
   
+  # test ssocks (nc -> ssd -> ss -> curl)
   - 'echo -ne "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\n$tstr" | nc -l 8080 &'
   - ./ssocks -s 127.0.0.1:8081 -l 8082 -b
   - ret=$(curl -x socks5://127.0.0.1:8082 127.0.0.1:8080)
+  - if [ "$ret" != "$tstr" ];
+    then
+      echo Expected $tstr, got $ret;
+      exit 1;
+    fi
+  
+  # test nsocks (nc -> ssd -> ns)
+  - 'echo -ne "HTTP/1.0 200 OK\r\nContent-Length: 6\r\n\r\n$tstr" | nc -l 8080 &'
+  - ret=$(./nsocks -s 127.0.0.1:8081 127.0.0.1 8080 | tail -n 1)
   - if [ "$ret" != "$tstr" ];
     then
       echo Expected $tstr, got $ret;
