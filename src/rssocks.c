@@ -173,7 +173,8 @@ void reverse_server(char *sockshost, int socksport,
             for (nc = 0; nc < MAXCLI; nc++) {
                 k = dispatch_server(&tc[nc], &set_read, &set_write);
                 if (k == -2 ) {
-                    boucle_princ = 0;
+                    // Not sure why this was set to exit the loop; much more stable without it
+                    //boucle_princ = 0;
                     break;
                 }
             }
