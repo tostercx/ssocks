@@ -8,3 +8,17 @@ build_script:
   - SET zip=ssocks-win32-%APPVEYOR_BUILD_VERSION%.zip
   - 7z a %zip% ./bin/*.exe ./src/*.conf ./src/*.auth
   - appveyor PushArtifact %zip%
+
+test_script:
+  - cd bin
+  - git clone https://github.com/tostercx/nc111nt-bin
+  
+  - ps: "$tstr = ([char[]]([char]'a'..[char]'z') | sort {get-random})[0..5] -join ''"
+  - ps: '"HTTP/1.0 200 OK`r`nContent-Length: 6`r`n`r`n$tstr" | Out-File -Encoding ASCII test.data'
+  - ps: Start-Process .\nc111nt-bin\nc.exe '-l -p 8080' -RedirectStandardInput .\test.data
+  
+  - ps: Start-Process .\ssocksd.exe '-p 8081'
+  - ps: $ret=$(curl.exe -sSx socks5://127.0.0.1:8081 127.0.0.1:8080)
+  - ps: if($tstr -ne $ret) { echo "Expected $tstr, got $ret"; exit 1 }
+  
+  - cd ..
