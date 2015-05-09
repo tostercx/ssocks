@@ -1,7 +1,15 @@
+About:
+
+sSocks is a package which contains: a socks5 server implements RFC 1928 (SOCKS V5) 
+and RFC 1929 (Authentication for SOCKS V5), a reverse socks server and client, 
+a netcat like tool, which supports socks5 with authentication 
+and a socks5 relay (run a server and send to a another socks5 server).
+
+------------------------------------------------------------------------
+
 Status on windows:
 
-Porting is under development. If something works it's a miracle.
-So far all tools have "worked" at one point or another.
+All tools have been ported and "work". They are still in alpha stage and may not work as expected in all circumstances.
 Daemon / background options are disabled on windows for now.
 
 ------------------------------------------------------------------------
@@ -14,13 +22,6 @@ CI Builds:
 ------------------------------------------------------------------------
 
 Original README:
-
-------------------------------------------------------------------------
-
-sSocks is a package which contains: a socks5 server implements RFC 1928 (SOCKS V5) 
-and RFC 1929 (Authentication for SOCKS V5), a reverse socks server and client, 
-a netcat like tool, which supports socks5 with authentication 
-and a socks5 relay (run a server and send to a another socks5 server).
 
 ------------------------------------------------------------------------
 Features:
