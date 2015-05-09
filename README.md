@@ -12,6 +12,11 @@ CI Builds:
 | [![Build Status](https://travis-ci.org/tostercx/ssocks.svg?branch=master)](https://travis-ci.org/tostercx/ssocks) | [![Build status](https://ci.appveyor.com/api/projects/status/aoeh16guoj21qfrd/branch/master?svg=true)](https://ci.appveyor.com/project/tostercx/ssocks/branch/master) | [check here](https://ci.appveyor.com/project/tostercx/ssocks/branch/master/artifacts) |
 
 ------------------------------------------------------------------------
+
+Original README:
+
+------------------------------------------------------------------------
+
 sSocks is a package which contains: a socks5 server implements RFC 1928 (SOCKS V5) 
 and RFC 1929 (Authentication for SOCKS V5), a reverse socks server and client, 
 a netcat like tool, which supports socks5 with authentication 
