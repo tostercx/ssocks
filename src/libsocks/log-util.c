@@ -26,6 +26,7 @@
  * THE SOFTWARE.
  */
 #include "output-util.h"
+#include "bor-util.h"
 #include "socks-common.h"
 
 #include <stdio.h>
