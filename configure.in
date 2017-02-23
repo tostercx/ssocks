@@ -7,6 +7,7 @@ AC_CONFIG_SRCDIR([src/auth-util.c])
 AC_CONFIG_HEADERS([config.h])
 
 # libtool
+LT_INIT
 AC_PROG_LIBTOOL
 AC_DISABLE_SHARED 
 AC_ENABLE_STATIC
@@ -30,11 +31,12 @@ AC_ARG_WITH(ssl,
 ],
 [   AC_MSG_RESULT(Enable SSL ...)
     AC_CHECK_LIB(ssl, SSL_library_init)
-	AM_CONDITIONAL(WITH_SSL, /bin/true)
+    AC_CHECK_LIB(crypto, ERR_load_crypto_strings)
+	AM_CONDITIONAL(WITH_SSL, true)
 ],
 [
     AC_MSG_RESULT(No SSL ...)
-    AM_CONDITIONAL(WITH_SSL, /bin/false)
+    AM_CONDITIONAL(WITH_SSL, false)
 ])
 
 # Checks for header files.

@@ -17,5 +17,7 @@ ssocksd_SOURCES =  auth-util.c configd-util.c ssocksd.c \
 auth-util.h  configd-util.h \
 ssocksd.conf ssocksd.auth
 
+ssocksd_LDADD = libsocks/libsocks.la
+
 
 sysconf_DATA = ssocksd.conf ssocksd.auth
