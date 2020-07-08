@@ -19,7 +19,21 @@ Building on Windows:
 From VS Dev Command Prompt run
 
 ```console
-nmake -f Makefile.nmake
+mkdir build
+cd build
+cmake ..
+msbuild ssocks.sln /p:Configuration=Release
+```
+
+------------------------------------------------------------------------
+
+Building on linux:
+
+```console
+mkdir build
+cd build
+cmake ..
+make
 ```
 
 ------------------------------------------------------------------------
@@ -62,63 +76,6 @@ File:
   - /var/log/ssocksd.log is default log (specified in configuration file)
   - /var/run/ssocksd.pid is create in daemon mode and delete
  when it receive SIGTERM
-
------------------------------------------------------------------------
-
- How to use rssocks and rcsocks in pentest mode
- http://www.vimeo.com/22515255
-
-------------------------------------------------------------------------
-More information see man page:
-
-ssocksd (1), nsocks (1), ssocks (1), ssocksd.auth (5), ssocksd.conf (5)
-rssocks (1), rcsocks (1)
-
-------------------------------------------------------------------------
-Ubuntu/debian install:
-
-  dpkg -i ssocks_0.0.*-*_i386.deb
-
-Warning: This package install the server with init script and start it
-with no authentication in the config file, so everybody can connect on.
-
-------------------------------------------------------------------------
-Gentoo install:
-
-I've a ebuild with init script contact me if you want it
-
-------------------------------------------------------------------------
-From source:
-
-  ./configure && make
-
-Warning: don't content init script
-
-------------------------------------------------------------------------
-Warning, if you import from git, you need to do:
-
-  $ ./bootstrap.sh
- 
-PS for me: To avoid to wait when you debug the server and some 
-socket don't close properly
-
-  # echo 1 > /proc/sys/net/ipv4/tcp_tw_recycle
-  
-To compile with dynamic lib
-
-  $ ./configure --disble-static
-  
-To enable SSL
-
-  $ ./configure with-ssl
- 
-Just for remember (this by default actually)
-
-  $ ./configure --enable-static --disable-shared
- 
-PS: for test and debug authentication
-
-  $ curl -U admin:abcde --socks5 127.0.0.1:1080 www.perdu.com
 
 ------------------------------------------------------------------------
 Copyright (C) 2011 by Hugo Caron
