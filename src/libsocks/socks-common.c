@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "socks-common.h"
 
 int buf_empty(s_buffer *buf) {
