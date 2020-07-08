@@ -9,7 +9,7 @@ hl() {
 }
 
 sdir="${0%/*}"
-pushd "${sdir}/src"
+pushd "${sdir}/build"
 clr
 
 hl "test ssocksd (nc -> ssd -> curl)"

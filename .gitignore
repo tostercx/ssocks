@@ -1,6 +1,6 @@
 Makefile
-src/config.h
 bin
+build
 *.o
 *.lo
 *.la
