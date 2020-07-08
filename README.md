@@ -13,6 +13,16 @@ All tools have been ported and "work". They are still in alpha stage and may not
 Daemon / background options are disabled on windows for now.
 
 ------------------------------------------------------------------------
+
+Building on Windows:
+
+From VS Dev Command Prompt run
+
+```console
+nmake -f Makefile.nmake
+```
+
+------------------------------------------------------------------------
 CI Builds:
 
 | Travis | AppVeyor | Win32 binaries |
