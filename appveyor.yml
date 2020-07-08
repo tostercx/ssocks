@@ -2,11 +2,16 @@ version: 0.0.14.{build}
 shallow_clone: true
 
 build_script:
-  - '"C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall" x86'
-  - nmake -f Makefile.nmake
+  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
+  
+  - mkdir build
+  - pushd build
+  - cmake ..
+  - msbuild ssocks.sln /p:Configuration=Release
+  - popd
   
   - SET zip=ssocks-win32-%APPVEYOR_BUILD_VERSION%.zip
-  - 7z a %zip% ./bin/*.exe ./src/*.conf ./src/*.auth
+  - 7z a %zip% ./build/Release/*.exe ./src/*.conf ./src/*.auth
   - appveyor PushArtifact %zip%
 
 test_script:
