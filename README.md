@@ -23,13 +23,6 @@ nmake -f Makefile.nmake
 ```
 
 ------------------------------------------------------------------------
-CI Builds:
-
-| Travis | AppVeyor | Win32 binaries |
-|:------:|:--------:|:--------------:|
-| [![Build Status](https://travis-ci.org/tostercx/ssocks.svg?branch=master)](https://travis-ci.org/tostercx/ssocks) | [![Build status](https://ci.appveyor.com/api/projects/status/aoeh16guoj21qfrd/branch/master?svg=true)](https://ci.appveyor.com/project/tostercx/ssocks/branch/master) | [check here](https://ci.appveyor.com/project/tostercx/ssocks/branch/master/artifacts) |
-
-------------------------------------------------------------------------
 
 Original README:
 
