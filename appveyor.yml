@@ -1,21 +1,22 @@
 version: 0.0.14.{build}
 shallow_clone: true
+image: Visual Studio 2019
 
 build_script:
-  - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars32.bat"
+  - cmd: call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
   
   - mkdir build
-  - pushd build
+  - cd build
   - cmake ..
   - msbuild ssocks.sln /p:Configuration=Release
-  - popd
+  - cd ..
   
   - SET zip=ssocks-win32-%APPVEYOR_BUILD_VERSION%.zip
-  - 7z a %zip% ./build/Release/*.exe ./src/*.conf ./src/*.auth
+  - 7z a %zip% build/Release/*.exe src/*.conf src/*.auth
   - appveyor PushArtifact %zip%
 
 test_script:
-  - cd bin
+  - cd build/Release
   - git clone https://github.com/tostercx/nc111nt-bin
   
   - ps: "$tstr = ([char[]]([char]'a'..[char]'z') | sort {get-random})[0..5] -join ''"
@@ -26,4 +27,4 @@ test_script:
   - ps: $ret=$(curl.exe -sSx socks5://127.0.0.1:8081 127.0.0.1:8080)
   - ps: if($tstr -ne $ret) { echo "Expected $tstr, got $ret"; exit 1 }
   
-  - cd ..
+  - cd ../..
