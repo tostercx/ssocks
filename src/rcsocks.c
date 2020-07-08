@@ -38,6 +38,7 @@
 
 #ifdef _WIN32
 #include "win_getopt.h"
+#include <windows.h>
 #else
 #include <getopt.h>
 #endif
@@ -258,15 +259,20 @@ void server_relay(int port, int listen, int ssl) {
     if (soc_ec_cli < 0) goto fin_serveur;
 
 
-#ifndef _WIN32
     if ( globalArgs.background == 1 ) {
+#ifndef _WIN32
         TRACE(L_NOTICE, "server: background ...");
         if ( daemon(0, 0) != 0 ) {
             perror("daemon");
             exit(1);
         }
+#else
+        printf("bg mode\n\n");
+        FreeConsole();
+#endif
     }
 
+#ifndef _WIN32
     bor_signal (SIGINT, capte_fin, SA_RESTART);
 
     /* TODO: Find a better way to exit the select and recall the init_select

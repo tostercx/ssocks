@@ -26,6 +26,8 @@
  * THE SOFTWARE.
  */
 #include "socks4.h"
+#include "bor-util.h"
+#include "net-util.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -38,11 +40,7 @@ int test_request4(s_socks *s, s_socket *stream, s_socket *bind,
     TRACE(L_DEBUG, "server [%d]: testing client request ...",
           s->id);
 
-    uint16_t port = 0, *p;
-
-    char domain[256];
-    unsigned char chAddr[4];
-    unsigned int l;
+    uint16_t port = 0;
 
     /* Rebuild the packet but don't extract
      * DST.ADDR and DST.PORT in Socks5Req struct */
@@ -70,7 +68,7 @@ int test_request4(s_socks *s, s_socket *stream, s_socket *bind,
         }
         break;
     case 0x02: /* TCP/IP port binding */
-        bind->soc = new_listen_socket(req.dstport, 10, &bind->adrC);
+        bind->soc = new_listen_socket(NULL, req.dstport, 10, &bind->adrC);
         if ( bind->soc >= 0 ) {
             s->connected = 0;
             s->listen = 1;

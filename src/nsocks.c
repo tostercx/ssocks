@@ -132,7 +132,6 @@ void netcat_like(s_socket *s) {
                     ERROR(L_DEBUG, "client: read 0 bytes on stdin");
                     boucle_princ = 0;
                 }
-                //printf("client: read %d bytes in stdin\n", k);
                 buf_b += k;
             }
 #endif
@@ -197,7 +196,6 @@ void netcat_like(s_socket *s) {
                     perror("write socket");
                     boucle_princ = 0;
                 }
-                //printf("client: wrote %d bytes on socket\n", k);
                 buf_a += k;
                 if ( buf_b - buf_a == 0 ) {
                     buf_b = 0;

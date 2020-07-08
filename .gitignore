@@ -1,6 +1,6 @@
 Makefile
-src/config.h
 bin
+build
 *.o
 *.lo
 *.la
@@ -9,7 +9,6 @@ bin
 .*
 *~
 autom4te.cache
-config.h
 config.log
 config.status
 libtool

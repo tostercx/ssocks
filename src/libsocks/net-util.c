@@ -61,7 +61,6 @@ int new_socket_tcpip(int port, struct sockaddr_in *addr) {
 }
 
 int build_addr(char ip[4], int port, struct sockaddr_in *addr) {
-    struct hostent *hp;
     addr->sin_family = AF_INET;
     addr->sin_port = htons(port);
     memcpy(&addr->sin_addr.s_addr, ip, 4);

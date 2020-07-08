@@ -54,7 +54,6 @@ int loadConfigFile(char *filename, struct globalArgsServer_t *c) {
     FILE *fp = fopen(filename, "r");
     if ( fp == 0 ) {
         ERROR(L_NOTICE, "config: can't open file %s", filename);
-        //perror("fopen");
         return -1;
     }
 
@@ -64,10 +63,7 @@ int loadConfigFile(char *filename, struct globalArgsServer_t *c) {
 
         k = sscanf(buf, "%254[^#=]=%254[^\n]\n", var, val);
 
-        //printf("%d\n", k);
         if ( k != 2 ) {
-            //TRACE(L_VERBOSE, "config: file malformated");
-            //break;
             continue;
         }
         trim(var);
@@ -131,7 +127,6 @@ int writePID(char *filename) {
     fprintf(fp, "%ld\n", (long)getpid());
     fclose(fp);
 
-    /* atexit((void(*)()) removePID); */
     return 0;
 }
 

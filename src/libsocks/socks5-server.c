@@ -26,6 +26,7 @@
  * THE SOFTWARE.
  */
 
+#include "socks4.h"
 #include "socks-common.h"
 #include "socks5-server.h"
 #include "net-util.h"
